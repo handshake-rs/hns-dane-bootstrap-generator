@@ -2,6 +2,15 @@
 
 A focused web app for producing the few records a domain owner needs to connect an HNS or ICANN domain to authoritative DNS, DNSSEC, and DANE/TLSA.
 
+Canonical source: [`handshake-rs/hns-dane-bootstrap-generator`](https://github.com/handshake-rs/hns-dane-bootstrap-generator).
+
+Within the Handshake Rust ecosystem, this is an operator-facing control-plane
+tool. It generates deployment inputs and verification commands; it does not
+resolve browser requests, classify HNS versus ICANN, crawl the public
+namespace, or act as consensus authority. Browser enforcement belongs to
+`hns-dane-engine` and its browser consumers, while observational discovery
+belongs to `hns-dane-crawler`.
+
 The app keeps the workflow simple:
 
 1. Enter domain, nameserver, server IP, and certificate/public key.

@@ -13,7 +13,7 @@ exec > >(tee -a "$LOG_FILE") 2>&1
 export DEBIAN_FRONTEND=noninteractive
 
 APPLIANCE_VERSION="v0.2.1"
-APPLIANCE_ARCHIVE_URL="https://github.com/denuoweb/hns-dane-bootstrap-generator/archive/refs/tags/${APPLIANCE_VERSION}.tar.gz"
+APPLIANCE_ARCHIVE_URL="https://github.com/handshake-rs/hns-dane-bootstrap-generator/archive/refs/tags/${APPLIANCE_VERSION}.tar.gz"
 APPLIANCE_ARCHIVE_SHA256="REPLACE_WITH_RELEASE_TARBALL_SHA256"
 
 if [[ "${APPLIANCE_ARCHIVE_SHA256}" == "REPLACE_WITH_RELEASE_TARBALL_SHA256" ]]; then

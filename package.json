@@ -35,5 +35,13 @@
     "glue",
     "ds-record"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/handshake-rs/hns-dane-bootstrap-generator.git"
+  },
+  "homepage": "https://github.com/handshake-rs/hns-dane-bootstrap-generator#readme",
+  "bugs": {
+    "url": "https://github.com/handshake-rs/hns-dane-bootstrap-generator/issues"
+  },
   "license": "MIT"
 }

@@ -17,7 +17,7 @@ const NAMESERVER_IPV4_PLACEHOLDER = '203.0.113.10';
 const WEBSITE_IPV4_PLACEHOLDER = '203.0.113.20';
 const DONATION_ADDRESS = 'hs1q5997733eq7f4yyk2vq2z8gz3yqyvpz422ypggh';
 const DONATION_URI = `handshake:${DONATION_ADDRESS}`;
-const GITHUB_REPOSITORY_URL = 'https://github.com/denuoweb/hns-dane-bootstrap-generator';
+const GITHUB_REPOSITORY_URL = 'https://github.com/handshake-rs/hns-dane-bootstrap-generator';
 const WEB_ADMIN_GUIDE_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/WEB_ADMIN_GUIDE.md`;
 const OS_QUICK_STARTS_URL = `${WEB_ADMIN_GUIDE_URL}#self-hosted-os-quick-starts`;
 const LINODE_BEGINNER_DEPLOY_URL = `${GITHUB_REPOSITORY_URL}/blob/main/docs/linode-beginner-deploy.md`;
@@ -771,7 +771,7 @@ function App() {
         <span>Donation:</span>
         <a href={DONATION_URI}>{DONATION_ADDRESS}</a>
         <span>GitHub:</span>
-        <a href={GITHUB_REPOSITORY_URL}>denuoweb/hns-dane-bootstrap-generator</a>
+        <a href={GITHUB_REPOSITORY_URL}>handshake-rs/hns-dane-bootstrap-generator</a>
         <span>Docs:</span>
         <a href={WEB_ADMIN_GUIDE_URL}>Web admin guide</a>
       </footer>

@@ -16,7 +16,7 @@ git push origin v0.2.1
 ## 2. Compute the GitHub release archive hash
 
 ```bash
-scripts/sha256-release.sh https://github.com/denuoweb/hns-dane-bootstrap-generator/archive/refs/tags/v0.2.1.tar.gz
+scripts/sha256-release.sh https://github.com/handshake-rs/hns-dane-bootstrap-generator/archive/refs/tags/v0.2.1.tar.gz
 ```
 
 The StackScript must be pinned to this hash before publication.
