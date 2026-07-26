@@ -11,6 +11,11 @@ namespace, or act as consensus authority. Browser enforcement belongs to
 `hns-dane-engine` and its browser consumers, while observational discovery
 belongs to `hns-dane-crawler`.
 
+Canonical source governance does not require the service or appliance
+publisher to change. Denuo Web LLC may continue to operate, publish, or sign
+artifacts from this repository, provided each release identifies its exact
+canonical `handshake-rs` source commit or tag.
+
 The app keeps the workflow simple:
 
 1. Enter domain, nameserver, server IP, and certificate/public key.
