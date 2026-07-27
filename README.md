@@ -89,7 +89,36 @@ For delegated HNS nameserver setups, the generator emits RFC 9461 DNS-server SVC
 _dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}
 ```
 
-This is still delegated DNS. The HNS parent resource proves the `NS`, `GLUE4`/`GLUE6`, and `DS` delegation; the signed authoritative zone advertises the nameserver's RFC 8484 DoH path. Website `A`/`AAAA`, HTTPS/SVCB, and TLSA records still live in the signed authoritative DNS zone and still validate against the HNS DS chain. RFC 9539 is a separate experimental specification for opportunistic recursive-to-authoritative DoT/DoQ on port 853, not an HNS TXT convention for DoH.
+The nameserver serves RFC 8484 at `https://ns1.dane/dns-query`. Because the SVCB advertises HTTP/2 and omits the optional `port` parameter, RFC 9461 assigns DoH its default HTTPS port, TCP 443. The HTTPS certificate must be valid for the nameserver hostname.
+
+This is still delegated authoritative DNS. The HNS parent resource proves the `NS`, `GLUE4`/`GLUE6`, and `DS` delegation; the signed authoritative zone advertises the alternate transport. The client still validates the HNS/DNSSEC chain and enforces the website's TLSA/DANE policy locally. DoH is not a trusted replacement validator.
+
+An important bootstrap limit applies to the current browser: it normally queries `_dns.<NS> SVCB` through the authoritative server on port 53 and validates that answer through the delegated DNSSEC chain. Consequently, the signed SVCB record does not, by itself, recover a network where every authoritative port 53 query is intercepted. It becomes usable after direct authoritative DNS can retrieve it, or after another authenticated path such as the opted-in P2P requester or an explicitly configured recursive HNS DoH endpoint has retrieved and validated it.
+
+Ownership follows the SVCB owner name:
+
+- For an in-zone nameserver such as `ns1.dane.`, the `dane.` operator can publish and sign `_dns.ns1.dane.`.
+- For an external nameserver such as `a.namenode.`, the external nameserver operator controls `_dns.a.namenode.`. The HNS website owner must ask that operator to publish the RFC 9461 record and serve RFC 8484 on HTTPS 443, or adopt an in-zone DoH-capable nameserver it controls.
+
+The generator does not emit an external nameserver's `_dns.<NS>` record into the website zone. RFC 9539 is a separate experimental specification for opportunistic recursive-to-authoritative DoT/DoQ on port 853, not an HNS TXT convention for DoH.
+
+#### Browser-specific standalone bootstrap
+
+For a standalone bypass when authoritative port 53 is completely intercepted, the current HNS browser also recognizes a non-standard, implementation-specific HNS parent TXT declaration with this shape:
+
+```text
+hnsdns=1;ns=<proven-nameserver>;transport=doh;doh=https://<actual-doh-host>/dns-query;tlsa=3,1,1,<actual-doh-endpoint-spki-sha256>
+```
+
+This declaration is proof-anchored in the HNS parent resource and uses the HNS-proven nameserver glue as routing evidence. The `tlsa=3,1,1,...` field pins the DoH endpoint's SPKI for the browser bootstrap; it is not the website's `_443._tcp` TLSA record.
+
+The generator keeps standards-based RFC 9461 output as its default and deliberately does **not** add this TXT declaration or a placeholder to the broadcastable HNS `parentDraft`. Before publishing a browser-specific declaration, the operator must separately provide and verify:
+
+1. the actual DoH endpoint hostname and HTTPS 443 path;
+2. the actual SHA-256 SPKI pin from the certificate served by that DoH endpoint; and
+3. proven glue that routes the declared nameserver to the intended server.
+
+Do not publish a placeholder and do not reuse the website TLSA key by assumption. The endpoint may intentionally use the same key only if its served certificate is independently measured and the resulting DoH endpoint pin is verified. Malformed or stale proof metadata must fail closed.
 
 ### ICANN delegated DNSSEC mode
 
@@ -314,9 +343,10 @@ The UI accepts query parameters so HNScrawler or another report can hand off a s
 ```text
 /dane-generator/?domain=example&intent=generate_tlsa
 /dane-generator/?domain=example&mode=synth&ns4=203.0.113.10&a=203.0.113.20
+/dane-generator/?domain=shakeshift%2F&domain_type=hns&intent=authoritative_doh&mode=delegated&nameserver=a.namenode
 ```
 
-When `intent` is present, the UI shows a report handoff card that explains the next action, such as generating TLSA, fixing missing GLUE, checking DS/DNSKEY mismatch, replacing stale TLSA, or completing SYNTH DNS setup.
+When `intent` is present, the UI shows a report handoff card that explains the next action, such as generating TLSA, fixing missing GLUE, checking DS/DNSKEY mismatch, replacing stale TLSA, completing SYNTH DNS setup, or adding standards-based authoritative DoH. The `authoritative_doh` handoff distinguishes an in-zone nameserver the site owner controls from an external nameserver whose operator must publish `_dns.<NS>`.
 
 Accepted aliases:
 

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Added an `authoritative_doh` browser handoff and default HNS delegated guidance for RFC 9461 discovery, its port 53 bootstrap limit, RFC 8484 on HTTPS 443, local DNSSEC/DANE validation, external-nameserver ownership, and the separately pinned implementation-specific HNS parent bootstrap.
 - Bumped the Linode StackScript and appliance release pin to `v0.2.1`.
 - Updated Vite and Vitest to the latest patch releases and renamed the npm package to `hns-dane-bootstrap-generator`.
 - Set the public Linode StackScript default to `2158182` for `HNS DANE One-Name Server`.

@@ -109,11 +109,54 @@ function authoritativeDohSvcbOwner(ns: string): string {
 function authoritativeDohSvcbRecord(ns: string, ttl: number): GeneratedLine {
   return {
     value: `${authoritativeDohSvcbOwner(ns)} ${ttl} IN SVCB 1 ${ns} alpn=h2 dohpath=/dns-query{?dns}`,
-    explanation: 'RFC 9461 DNS-server SVCB record advertising the nameserver RFC 8484 DoH endpoint. Publish this in the authoritative DNS zone, not in the HNS parent resource.'
+    explanation: 'RFC 9461 DNS-server SVCB record advertising the nameserver RFC 8484 DoH endpoint. With h2 and no explicit port parameter, DoH uses HTTPS 443. Publish this in the signed authoritative DNS zone, not in the HNS parent resource; clients still validate DNSSEC and DANE locally.'
   };
 }
 
-function defaultHelpTips(domainType: BootstrapInput['domainType'], setupMode: BootstrapInput['setupMode'], preset: DnsServerPreset, domain: string, nameserver: string): string[] {
+function authoritativeDohGuidance(domainType: BootstrapInput['domainType'], setupMode: BootstrapInput['setupMode'], domain: string, nameserver: string, inBailiwickNameserver: boolean): GeneratedLine[] {
+  if (domainType !== 'hns' || setupMode !== 'delegated') return [];
+
+  const owner = authoritativeDohSvcbOwner(nameserver);
+  const endpoint = `https://${rootless(nameserver)}/dns-query`;
+  const bootstrapLine: GeneratedLine = {
+    value: `Bootstrap limit: the browser normally queries ${owner} through authoritative port 53, so this SVCB record alone cannot recover when port 53 is completely intercepted; it becomes usable only after an authenticated DNS path can retrieve it.`,
+    explanation: 'Direct authoritative DNS, an opted-in proof-backed relay, or an explicitly configured recursive HNS DoH path must first authenticate the signed SVCB response.'
+  };
+  const validationLine: GeneratedLine = {
+    value: 'Validation remains local: authoritative DoH carries DNS messages over HTTPS; the client must still validate the HNS/DNSSEC chain and enforce TLSA/DANE.',
+    explanation: 'Do not treat the DoH server as a trusted recursive validator. Its response is authenticated by the same local DNSSEC and DANE policy as a direct authoritative answer.'
+  };
+
+  if (inBailiwickNameserver) {
+    return [
+      {
+        value: `Discovery: publish the generated DNSSEC-signed RFC 9461 record at ${owner}.`,
+        explanation: `The signed ${domain} zone controls ${owner}, so the name owner can publish this service binding.`
+      },
+      {
+        value: `Transport: serve RFC 8484 at ${endpoint} over HTTPS on TCP 443 with a certificate valid for ${rootless(nameserver)}.`,
+        explanation: 'The generated SVCB record advertises alpn=h2 and dohpath=/dns-query{?dns}. RFC 9461 assigns DoH its default HTTPS port 443 when the port parameter is omitted.'
+      },
+      bootstrapLine,
+      validationLine
+    ];
+  }
+
+  return [
+    {
+      value: `External nameserver ownership: ${nameserver} controls ${owner}; the ${rootless(domain)}/ owner cannot publish that record inside the external nameserver’s zone.`,
+      explanation: 'The DNS operator that controls the nameserver hostname must publish and DNSSEC-sign its RFC 9461 service binding.'
+    },
+    {
+      value: `Standards path: ask the ${nameserver} operator to serve RFC 8484 at ${endpoint} on HTTPS 443 and publish ${owner}, or adopt an in-zone DoH-capable nameserver you control.`,
+      explanation: 'Changing records in the website zone cannot authenticate a service binding whose owner name belongs to an external nameserver zone.'
+    },
+    bootstrapLine,
+    validationLine
+  ];
+}
+
+function defaultHelpTips(domainType: BootstrapInput['domainType'], setupMode: BootstrapInput['setupMode'], preset: DnsServerPreset, domain: string, nameserver: string, inBailiwickNameserver: boolean): string[] {
   const tips = [
     'Fastest reliable path: create the authoritative zone, enable DNSSEC signing, paste DNSKEY here, then copy the generated DS to the wallet or registrar.',
     recommendedPresetTip(preset),
@@ -124,7 +167,11 @@ function defaultHelpTips(domainType: BootstrapInput['domainType'], setupMode: Bo
 
   if (domainType === 'hns' && setupMode === 'delegated') {
     tips.push(`For HNS delegated mode, GLUE4/GLUE6 is needed when the nameserver lives under the HNS name itself, such as ${nameserver} for ${rootless(domain)}/.`);
-    tips.push(`If the nameserver also serves RFC 8484 DoH, publish the RFC 9461 DNS-server SVCB record ${authoritativeDohSvcbOwner(nameserver)} in the authoritative DNS zone.`);
+    if (inBailiwickNameserver) {
+      tips.push(`Serve RFC 8484 at https://${rootless(nameserver)}/dns-query on HTTPS 443 and publish the DNSSEC-signed RFC 9461 DNS-server SVCB record ${authoritativeDohSvcbOwner(nameserver)}. The browser normally retrieves that record through authoritative port 53, so it is not a standalone bootstrap when port 53 is completely intercepted. The alternate transport does not replace local DNSSEC or DANE validation.`);
+    } else {
+      tips.push(`${nameserver} is external, so its operator controls ${authoritativeDohSvcbOwner(nameserver)}. Ask that operator to publish RFC 9461 discovery for RFC 8484 on HTTPS 443, or adopt an in-zone DoH-capable nameserver; the site owner cannot publish the external nameserver’s record. The browser normally discovers SVCB through port 53, so the record alone cannot bootstrap complete port 53 interception. DNSSEC and DANE validation remain local.`);
+    }
   }
 
   if (setupMode === 'hns-inline') {
@@ -382,6 +429,9 @@ function buildSections(result: Omit<BootstrapResult, 'sections'>): OutputSection
     { id: 'authoritative', title: result.authoritativeTitle, audience: 'authoritative', lines: result.authoritativeRecords }
   ];
 
+  if (result.authoritativeDohNotes.length > 0) {
+    sections.push({ id: 'authoritative-doh', title: 'Authoritative DoH on HTTPS 443', audience: 'authoritative', lines: result.authoritativeDohNotes, compact: true });
+  }
   sections.push({ id: 'verify', title: result.verificationTitle, audience: 'verify', lines: result.verificationCommands, compact: true });
   sections.push({ id: 'web', title: 'Web server note', audience: 'web', lines: result.webServerNotes, compact: true });
   sections.push({ id: 'integrator', title: result.integrationTitle, audience: 'integrator', lines: result.integrationRecords });
@@ -581,6 +631,7 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
   const statusChecks = buildStatusChecks(input, effectiveMode, inBailiwickNameserver, hasDs, hasTlsa);
   const quickSteps = buildQuickSteps(input, effectiveMode, hasDs, hasTlsa);
   const verificationCommands = buildVerificationCommands(input, effectiveMode, normalizedDomain, ns, owner);
+  const authoritativeDohNotes = authoritativeDohGuidance(input.domainType, effectiveMode, normalizedDomain, ns, inBailiwickNameserver);
   const integrationRecords = buildIntegrationRecord(parentDraft, input, effectiveMode, parentRecords, authoritativeRecords);
   authoritativeRecords.push(...authoritativeDnsOptions);
   const hnsResourceSizeBytes = input.domainType === 'hns' ? estimateHnsResourceSize(parentDraft) : undefined;
@@ -600,13 +651,14 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
     serverPresetRecords,
     verificationTitle: 'Verify with these commands',
     verificationCommands,
+    authoritativeDohNotes,
     integrationTitle: 'Integrator JSON',
     integrationRecords,
     webServerNotes,
     quickSteps,
     notices,
     warnings: notices.filter((item) => item.severity !== 'info').map((item) => item.message),
-    helpTips: defaultHelpTips(input.domainType, effectiveMode, preset, normalizedDomain, ns),
+    helpTips: defaultHelpTips(input.domainType, effectiveMode, preset, normalizedDomain, ns, inBailiwickNameserver),
     statusChecks,
     diagnostics: {
       inBailiwickNameserver,

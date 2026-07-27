@@ -129,9 +129,30 @@ describe('URL prefill', () => {
     expect(prefill.dnsServerPreset).toBe('bind');
   });
 
+  it('prefills the authoritative DoH browser handoff as delegated HNS', () => {
+    const prefill = readUrlPrefillFromSearch('?domain=shakeshift%2F&domain_type=hns&intent=authoritative_doh&nameserver=a.namenode');
+
+    expect(prefill.domainInput).toBe('shakeshift/');
+    expect(prefill.domainType).toBe('hns');
+    expect(prefill.setupMode).toBe('delegated');
+    expect(prefill.nameserverHost).toBe('a.namenode');
+    expect(prefill.intent).toBe('authoritative_doh');
+  });
+
   it('maps report intents to handoff guidance', () => {
     expect(guidanceForIntent('generate_tlsa')?.title).toBe('Generate TLSA next');
     expect(guidanceForIntent('missing_glue')?.title).toBe('Fix nameserver bootstrap');
+    const authoritativeDoh = guidanceForIntent('authoritative_doh');
+    expect(authoritativeDoh?.title).toBe('Configure authoritative DoH on HTTPS 443');
+    expect(authoritativeDoh?.body).toContain('RFC 9461 _dns.<NS> SVCB');
+    expect(authoritativeDoh?.body).toContain('RFC 8484');
+    expect(authoritativeDoh?.body).toContain('cannot bootstrap itself');
+    expect(authoritativeDoh?.next.join(' ')).toContain('external nameserver');
+    expect(authoritativeDoh?.next.join(' ')).toContain('non-standard, implementation-specific HNS parent TXT');
+    expect(authoritativeDoh?.next.join(' ')).toContain('hnsdns=1');
+    expect(authoritativeDoh?.next.join(' ')).toContain('independently measured SPKI SHA-256 pin');
+    expect(authoritativeDoh?.next.join(' ')).toContain('never publish a placeholder or reuse the website TLSA key');
+    expect(authoritativeDoh?.next.join(' ')).toContain('DNSSEC chain validation and TLSA/DANE verification');
     expect(guidanceForIntent('ds_dnskey_mismatch')?.title).toBe('Regenerate or check DS');
   });
 
@@ -232,7 +253,10 @@ describe('bootstrap generator', () => {
     expect(shakeOption?.value).not.toContain('"type": "TXT"');
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN A 203.0.113.20'))).toBe(true);
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN TLSA 3 1 1 '))).toBe(true);
-    expect(result.authoritativeRecords.some((line) => line.value === '_dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}')).toBe(true);
+    const authoritativeDohRecord = result.authoritativeRecords.find((line) => line.value === '_dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}');
+    expect(authoritativeDohRecord).toBeDefined();
+    expect(authoritativeDohRecord?.explanation).toContain('HTTPS 443');
+    expect(authoritativeDohRecord?.explanation).toContain('validate DNSSEC and DANE locally');
     const zoneFileOption = result.authoritativeRecords.find((line) => line.presentation?.tabId === 'generic-zone');
     expect(zoneFileOption?.presentation?.tabLabel).toBe('Zone file');
     expect(zoneFileOption?.presentation?.defaultSelected).toBe(true);
@@ -241,8 +265,38 @@ describe('bootstrap generator', () => {
     expect(result.authoritativeRecords.find((line) => line.presentation?.tabId === 'hosted-dns')?.value).toContain('Hosted DNS provider panel');
     expect(result.webServerNotes.some((line) => line.value.includes('current and next TLSA'))).toBe(true);
     expect(result.webServerNotes.some((line) => line.value.includes('ordinary HTTPS clients may ignore'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('https://ns1.dane/dns-query'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('HTTPS on TCP 443'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('SVCB record alone cannot recover'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('Validation remains local'))).toBe(true);
+    expect(result.sections.some((section) => section.id === 'authoritative-doh' && section.title === 'Authoritative DoH on HTTPS 443')).toBe(true);
     expect(result.quickSteps.length).toBeGreaterThan(3);
     expect(result.sections.some((section) => section.id === 'capsule')).toBe(false);
+    expect(JSON.stringify(result)).not.toContain('hnsdns=1');
+  });
+
+  it('explains authoritative DoH ownership for an external HNS nameserver', async () => {
+    const result = await generateBootstrap({
+      domainType: 'hns',
+      setupMode: 'delegated',
+      domainInput: 'shakeshift/',
+      nameserverHost: 'a.namenode',
+      websiteIpv4: '203.0.113.20',
+      port: 443,
+      protocol: 'tcp'
+    });
+
+    expect(result.diagnostics.inBailiwickNameserver).toBe(false);
+    expect(result.authoritativeRecords.some((line) => line.value.startsWith('_dns.a.namenode. '))).toBe(false);
+    expect(result.authoritativeRecords.filter((line) => line.presentation).every((line) => !line.value.includes('_dns.a.namenode'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('a.namenode. controls _dns.a.namenode.'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('the shakeshift/ owner cannot publish'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('adopt an in-zone DoH-capable nameserver'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('https://a.namenode/dns-query on HTTPS 443'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('SVCB record alone cannot recover'))).toBe(true);
+    expect(result.authoritativeDohNotes.some((line) => line.value.includes('Validation remains local'))).toBe(true);
+    expect(result.helpTips.some((tip) => tip.includes('operator controls _dns.a.namenode.'))).toBe(true);
+    expect(JSON.stringify(result)).not.toContain('hnsdns=1');
   });
 
   it('generates HNS SYNTH nameserver outputs', async () => {

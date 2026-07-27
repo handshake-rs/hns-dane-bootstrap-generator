@@ -22,6 +22,19 @@ const GUIDANCE: Record<string, HandoffGuidance> = {
     body: 'HNScrawler found delegation that cannot be bootstrapped in strict HNS yet. Add the authoritative nameserver IP address so GLUE or SYNTH records can be generated.',
     next: ['Confirm the nameserver hostname.', 'Add at least one nameserver IPv4 or IPv6 address.', 'Publish the generated parent-side records through the wallet.']
   },
+  'authoritative-doh': {
+    badge: 'HNS browser handoff',
+    title: 'Configure authoritative DoH on HTTPS 443',
+    body: 'A DNSSEC-signed RFC 9461 _dns.<NS> SVCB record is the standards-based way to advertise RFC 8484 DoH on HTTPS 443, but the browser normally discovers that record through authoritative port 53. It cannot bootstrap itself when port 53 is completely intercepted.',
+    next: [
+      'Confirm who operates the delegated nameserver.',
+      'For an in-zone nameserver you operate, serve /dns-query on HTTPS 443 and publish the generated _dns.<NS> SVCB record in the signed authoritative zone.',
+      'For an external nameserver, ask its operator to publish _dns.<NS>, or adopt an in-zone DoH-capable nameserver; the site owner cannot publish records inside the external nameserver’s zone.',
+      'For a standalone bypass of completely intercepted port 53, the browser also supports a non-standard, implementation-specific HNS parent TXT declaration using hnsdns=1, proven nameserver glue, and a TLSA 3 1 1 pin for the DoH endpoint.',
+      'Supply the actual DoH endpoint hostname and its independently measured SPKI SHA-256 pin before publishing that parent TXT; never publish a placeholder or reuse the website TLSA key by assumption.',
+      'Keep client-side DNSSEC chain validation and TLSA/DANE verification enabled.'
+    ]
+  },
   'ds-dnskey-mismatch': {
     badge: 'HNScrawler handoff',
     title: 'Regenerate or check DS',

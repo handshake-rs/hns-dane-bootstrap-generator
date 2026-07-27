@@ -67,6 +67,15 @@ Help copy for HNS delegated mode:
 
 Nameserver-hostname guidance should distinguish provider-assigned nameservers from vanity/in-name nameservers. Provider nameservers normally need only an `NS` delegation. In-name nameservers such as `ns1.dane.` or `ns1.example.com.` need address records on the authoritative service and parent-side glue.
 
+Generated HNS delegated output also includes an **Authoritative DoH on HTTPS 443** guidance section:
+
+- An in-zone nameserver the owner operates gets a DNSSEC-signed RFC 9461 `_dns.<NS>` SVCB record advertising `alpn=h2` and `dohpath=/dns-query{?dns}`. RFC 8484 is served through HTTPS on TCP 443; omitting the SVCB `port` parameter selects DoH's default port 443.
+- An external nameserver does not get a fabricated record in the website zone. Its operator controls `_dns.<NS>` and must publish the signed service binding and HTTPS endpoint, or the website owner must adopt an in-zone DoH-capable nameserver.
+- The browser normally discovers `_dns.<NS>` through authoritative port 53. The standards record cannot bootstrap itself on a network where port 53 is completely intercepted; another authenticated DNS path must first retrieve it.
+- The guidance states that the alternate transport only carries DNS messages. The client continues local HNS/DNSSEC chain validation and TLSA/DANE enforcement.
+
+An `intent=authoritative_doh` URL handoff displays these same ownership, bootstrap, and validation rules before the generated output. It also explains the browser's non-standard, implementation-specific standalone option: a proof-anchored HNS parent `hnsdns=1` TXT declaration with proven glue and a separately verified TLSA `3 1 1` SPKI pin for the DoH endpoint. The UI must not add a placeholder declaration to broadcastable parent output, derive the pin from the website TLSA field, or imply that the website TLSA key is automatically the DoH endpoint key.
+
 Preset choices:
 
 - Hosted DNS provider panel

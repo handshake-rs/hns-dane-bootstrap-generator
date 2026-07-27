@@ -72,6 +72,7 @@ export interface BootstrapResult {
   serverPresetRecords: GeneratedLine[];
   verificationTitle: string;
   verificationCommands: GeneratedLine[];
+  authoritativeDohNotes: GeneratedLine[];
   integrationTitle: string;
   integrationRecords: GeneratedLine[];
   webServerNotes: GeneratedLine[];

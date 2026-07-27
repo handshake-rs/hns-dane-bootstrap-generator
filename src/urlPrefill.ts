@@ -61,7 +61,7 @@ function normalizeSetupMode(value: string): SetupMode | null {
 function setupModeFromIntent(intent: string): SetupMode | null {
   const normalized = intent.toLowerCase().replaceAll('_', '-');
   if (normalized.includes('synth')) return 'hns-inline';
-  if (normalized.includes('glue') || normalized.includes('ns')) return 'delegated';
+  if (normalized.includes('glue') || normalized.includes('ns') || normalized.includes('doh')) return 'delegated';
   return null;
 }
 
