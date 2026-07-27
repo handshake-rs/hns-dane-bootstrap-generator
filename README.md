@@ -302,10 +302,9 @@ No. Nginx, Apache, and Caddy serve the normal certificate and private key. DANE-
 ## Development
 
 ```bash
-npm install
+npm ci
 npm run dev
-npm test
-npm run build
+./scripts/check.sh
 ```
 
 Static output goes to `dist/`.
