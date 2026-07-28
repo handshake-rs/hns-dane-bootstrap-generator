@@ -337,7 +337,7 @@ const result = await generateBootstrap({
 
 ## URL prefill
 
-The UI accepts query parameters so HNScrawler or another report can hand off a specific next step:
+The UI accepts query parameters so HNS DANE Crawler or another report can hand off a specific next step:
 
 ```text
 /dane-generator/?domain=example&intent=generate_tlsa
@@ -353,10 +353,15 @@ Accepted aliases:
 - Domain type: `domainType`, `domain_type`, `type` with `hns` or `icann`
 - Setup mode: `setupMode`, `setup_mode`, `mode` with `delegated` or `synth`/`hns-inline`
 - Next-step hint: `intent`, `action`, `next_step`
-- Nameserver: `nameserver`, `nameserverHost`, `ns`
-- Nameserver IPs: `ns4`, `ns6`, `glue4`, `glue6`
-- Website IPs: `a`, `aaaa`, `websiteIpv4`, `websiteIpv6`
-- Other fields: `port`, `preset`, `dnskey`, `pem`, `cert`, `certificate`
+- Nameserver: `nameserver`, `nameserverHost`, `nameserver_host`, `ns`, `ns_host`
+- Nameserver IPv4: `nameserverIpv4`, `nameserver_ipv4`, `ns4`, `glue4`
+- Nameserver IPv6: `nameserverIpv6`, `nameserver_ipv6`, `ns6`, `glue6`
+- Website IPv4: `websiteIpv4`, `website_ipv4`, `website4`, `a`, `ipv4`
+- Website IPv6: `websiteIpv6`, `website_ipv6`, `website6`, `aaaa`, `ipv6`
+- DNS server preset: `preset`, `dnsServerPreset`, `dns_server_preset`
+- DNSKEY: `dnskey`, `dnskeyInput`, `dnskey_input`
+- Certificate/public key: `pem`, `cert`, `certificate`, `publicKey`, `public_key`
+- HTTPS port: `port`
 
 ## Design rules
 
@@ -368,6 +373,7 @@ Accepted aliases:
 
 - DNSSEC: RFC 4034, RFC 4509.
 - DANE/TLSA: RFC 6698, RFC 7671.
+- Authoritative DoH: RFC 8484 transport and RFC 9461 DNS-server SVCB discovery.
 - DNSSEC algorithm guidance: IANA DNS Security Algorithm Numbers, IANA DS Digest Algorithms, RFC 9904, RFC 9905.
 - IDNA/i18n: RFC 5890-5894, RFC 3492, Unicode UTS #46.
 - Future email i18n scope: RFC 6530-6533.

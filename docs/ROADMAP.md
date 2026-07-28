@@ -10,15 +10,15 @@ Completed foundation:
 - TLSA 3 1 1 from PEM PUBLIC KEY
 - TLSA 3 1 1 from PEM CERTIFICATE
 - DS SHA-256 from DNSKEY
-- Copyable output boxes
+- Selectable plain-text output boxes
 - Field-level setup hints
 
-## v0.2: web-admin onboarding
+## v0.2 through v0.2.1: web-admin onboarding
 
-Current scaffold target:
+Completed release scope:
 
 - Setup status checklist
-- Copyable parent, authoritative, verification, web, and integrator outputs
+- Selectable parent, authoritative, verification, web, and integrator outputs
 - Generic zone-file preset
 - PowerDNS Authoritative preset
 - Knot DNS preset
@@ -41,7 +41,7 @@ Current scaffold target:
 - Automated HNS parent record lookup
 - Expiration and TTL warnings
 
-## v0.4: Linode appliance MVP
+## Linode appliance MVP (released by v0.2.1)
 
 - Thin Linode/Akamai StackScript bootstrapper
 - Versioned `appliance/` installer

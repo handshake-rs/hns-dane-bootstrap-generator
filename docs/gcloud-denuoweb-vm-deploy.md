@@ -22,8 +22,7 @@ Build locally:
 
 ```bash
 npm ci
-npm test
-npm run build
+./scripts/check.sh
 ```
 
 Deploy the contents of `dist/` to the VM web root, replacing old generated assets and keeping a timestamped backup on the VM first.
@@ -42,4 +41,7 @@ directory. On the VM, move the current web root to a timestamped backup before
 moving the complete staged directory into place. Verify the deployed file
 hashes and the live HTTPS response before removing any backup.
 
-This repository intentionally does not use GitHub Actions for deployment. Do not add `.github/workflows/*`; deployment should stay explicit from the maintainer shell with `gcloud compute ssh` and `gcloud compute scp`.
+GitHub Actions runs the locked generator and appliance qualification gate on
+Ubuntu 24.04 with Node.js 22. It does not deploy the site and receives no GCP
+credentials. Production deployment stays explicit from the maintainer shell
+with `gcloud compute ssh` and `gcloud compute scp`.

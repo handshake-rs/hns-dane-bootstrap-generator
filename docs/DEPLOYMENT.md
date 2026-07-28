@@ -3,7 +3,7 @@
 ## Local development
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -11,12 +11,12 @@ npm run dev
 
 ```bash
 npm ci
-npm test
-npm run test:appliance
-npm run build
+./scripts/check.sh
 ```
 
-The static site is emitted to `dist/`.
+The qualification gate runs the dependency audit, TypeScript checks, browser
+tests, appliance tests, and production build. The static site is emitted to
+`dist/`.
 
 ## Linode/Akamai appliance
 

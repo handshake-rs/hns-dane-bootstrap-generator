@@ -13,7 +13,7 @@ For an HNS name such as `dane/`:
 
 1. Run an authoritative DNS server.
 2. Use a nameserver name such as `ns1.dane.`.
-3. Put that nameserver IP in the HNS wallet as `GLUE4` or `GLUE6`.
+3. Publish `NS ns1.dane.` in the HNS wallet, plus `GLUE4` or `GLUE6` for that in-zone nameserver.
 4. Put the web server IP and TLSA record in the DNS zone.
 5. Enable DNSSEC signing.
 6. Publish the DS record in the HNS wallet.
@@ -65,8 +65,22 @@ Do not put website IPs in glue. Glue only helps resolvers find the nameserver. W
 
 Delegated authoritative DNS and HNS SYNTH use the same DNS-server job: serve the signed zone with `NS`, website `A`/`AAAA`, `TLSA`, `DNSKEY`, `RRSIG`, and authenticated denial records. The parent-side step is what changes:
 
-- **Delegated authoritative DNS**: parent gets `NS` or `GLUE4`/`GLUE6`, plus `DS`.
+- **Delegated authoritative DNS**: parent gets `NS`, plus `GLUE4`/`GLUE6` when the nameserver is in-zone, plus `DS`.
 - **HNS SYNTH nameserver**: HNS parent gets `SYNTH4`/`SYNTH6`, plus `DS`.
+
+### Authoritative DoH is a separate HTTPS service
+
+For an in-zone nameserver in delegated HNS mode, generated zone output also
+includes RFC 9461 `_dns.<NS>` SVCB discovery for RFC 8484 DoH on
+`https://<NS>/dns-query`. Publish that record only when the nameserver really
+serves the advertised HTTP/2 DoH endpoint on TCP 443 with a certificate valid
+for the nameserver hostname.
+
+The BIND and Windows quick starts below configure authoritative DNS on
+UDP/TCP 53; they do not create an HTTPS DoH frontend. Add and validate a
+separate DoH frontend before publishing the generated SVCB record, or omit
+that record until the endpoint exists. The repository's Linode appliance is
+the provided path that configures Knot, dnsdist, and nginx together.
 
 ### Debian with BIND 9: delegated authoritative DANE
 
@@ -143,7 +157,9 @@ dig @127.0.0.1 _443._tcp.dane. TLSA +dnssec +norecurse
 dig @127.0.0.1 dane. DNSKEY +dnssec +multi
 ```
 
-Then paste the public DNSKEY into this app, publish the generated `DS` in the HNS wallet, and publish `GLUE4 ns1.dane. 203.0.113.10` in the HNS wallet. For ICANN, use the registrar's nameserver, glue, and DS fields instead.
+Then paste the public DNSKEY into this app and publish `NS ns1.dane.`,
+`GLUE4 ns1.dane. 203.0.113.10`, and the generated `DS` in the HNS wallet. For
+ICANN, use the registrar's nameserver, glue, and DS fields instead.
 
 ### Debian with BIND 9: HNS SYNTH nameserver
 
@@ -193,7 +209,7 @@ Get-DnsServerResourceRecord -ZoneName "dane" -RRType DS
 
 Then publish the parent-side material:
 
-- HNS delegated: `GLUE4 ns1.dane. 203.0.113.10` plus `DS` in the HNS wallet.
+- HNS delegated: `NS ns1.dane.`, `GLUE4 ns1.dane. 203.0.113.10`, and `DS` in the HNS wallet.
 - ICANN delegated: nameserver `ns1.example.com.`, registrar glue if in-zone, plus `DS`.
 
 ### Windows Server DNS: HNS SYNTH nameserver
@@ -239,6 +255,7 @@ Parent-side records only tell resolvers where authority starts.
 HNS parent examples:
 
 ```zone
+NS ns1.dane.
 GLUE4 ns1.dane. 203.0.113.10
 DS 12345 13 2 7A1B...F09C
 ```
@@ -259,6 +276,8 @@ The authoritative DNS server publishes the website and DANE records:
 dane. 3600 IN NS ns1.dane.
 dane. 3600 IN A 203.0.113.20
 _443._tcp.dane. 3600 IN TLSA 3 1 1 <spki-sha256>
+# Publish only when ns1.dane. actually serves RFC 8484 on HTTPS 443:
+_dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}
 ```
 
 ## Running your own authoritative nameserver
@@ -395,7 +414,10 @@ The standards tracked by this project are in [Internationalization standards](I1
 
 ### Do I need glue?
 
-Glue is needed when the nameserver is inside the same zone. For `dane/` using `ns1.dane.`, publish `GLUE4` or `GLUE6` in the HNS wallet. If the nameserver is external, such as a provider nameserver, publish `NS` instead.
+Delegated mode always needs an `NS` record. When that nameserver is inside the
+same zone, it also needs glue: for `dane/` using `ns1.dane.`, publish `NS`
+plus `GLUE4` or `GLUE6` in the HNS wallet. An external provider nameserver
+needs `NS` without glue.
 
 ### Is SYNTH the website IP?
 

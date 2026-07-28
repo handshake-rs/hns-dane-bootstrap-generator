@@ -8,10 +8,14 @@ This path is for a user who wants Linode/Akamai to bill them directly and wants 
 2. Choose the Linode/Akamai deployment path.
 3. Create a Debian 13 Linode with the pinned HNS DANE StackScript. If the project maintainer has published the StackScript, use the app's `Open Linode` button.
 4. Wait for the StackScript to finish.
-5. Open the dashboard at the server IPv4 address.
+5. SSH to the server and read `/root/hns-dane-appliance/README-FIRST.txt`, or run `hns-dane print-wallet-instructions`.
 6. Copy the NS, GLUE, and DS records into the wallet that owns the HNS name.
 7. Submit the HNS update yourself.
-8. Return to the dashboard after confirmation and check verification status.
+8. After the update confirms and the name resolves, open the generated `https://<name>/` dashboard and check verification status.
+
+The appliance deliberately removes TCP 80 access. Its nginx dashboard is
+name-bound HTTPS on TCP 443, so the raw server IPv4 address is not a supported
+dashboard URL.
 
 ## StackScript wallet fields
 
@@ -40,7 +44,8 @@ The VPS generates its own TLS and DNSSEC keys locally. The public dashboard show
 
 ## Beginner mode
 
-Use `single-node` for v0.2.1. It creates:
+The v0.2.1 StackScript always provisions `single-node`; it does not expose a
+deployment-mode field. The resulting appliance creates:
 
 ```text
 ns1.<name>. -> server IPv4

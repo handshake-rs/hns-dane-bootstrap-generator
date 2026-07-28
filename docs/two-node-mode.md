@@ -31,7 +31,10 @@ Implemented:
 
 - single-node deployment
 - canonical config shape with deployment mode and role fields
-- StackScript UDF values reserved for future two-node mode
+- a StackScript that exposes no deployment-mode field and always selects
+  `single-node`
+- an installer/configuration guard that rejects `primary-node` and
+  `secondary-node`
 - documentation for the assisted design
 
 Not implemented:

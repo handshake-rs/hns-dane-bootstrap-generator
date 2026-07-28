@@ -7,7 +7,8 @@ Implemented baseline:
 - apt package installation during setup
 - unattended security upgrades
 - UFW default deny incoming and default allow outgoing
-- UFW allows OpenSSH, DNS TCP/UDP 53, HTTP 80, and HTTPS 443
+- UFW allows OpenSSH, DNS TCP/UDP 53, and HTTPS 443
+- any stale UFW allow rule for TCP 80 is removed during setup or upgrade
 - fail2ban enabled when available
 - Knot runs through the distribution service account
 - nginx runs through the distribution service account

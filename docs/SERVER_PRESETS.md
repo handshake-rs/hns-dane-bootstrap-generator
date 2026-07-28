@@ -19,7 +19,12 @@ Every preset assumes the operator will still handle baseline authoritative-DNS o
 
 Use this when the admin will adapt the result to BIND, Knot, NSD, or a provider import tool.
 
-The generic output includes SOA/NS/A/AAAA/TLSA records and an operational checklist. The admin must still configure the daemon, disable recursion, open UDP/TCP 53, sign the zone, publish DS, and validate the chain.
+The generic output includes SOA/NS/A/AAAA/TLSA records, an operational
+checklist, and—only for an in-zone delegated HNS nameserver—an RFC 9461 SVCB
+record advertising authoritative DoH. The admin must still configure the
+daemon, disable recursion, open UDP/TCP 53, sign the zone, publish DS, and
+validate the chain. The SVCB record must not be published until a real RFC
+8484 endpoint is available on the advertised nameserver's HTTPS port 443.
 
 ## Hosted DNS provider panel
 

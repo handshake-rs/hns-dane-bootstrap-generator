@@ -94,7 +94,7 @@ The DNS server preset field should visibly link to Debian/BIND and Windows Serve
 
 | Domain type | Setup mode | Parent-side output | Authoritative DNS output | DNSSEC + DANE support |
 | --- | --- | --- | --- | --- |
-| HNS | Delegated authoritative DNS | `NS` or `GLUE4`/`GLUE6`, plus `DS` | `NS`, `A`/`AAAA`, `TLSA`, signed zone | Yes |
+| HNS | Delegated authoritative DNS | `NS`, plus `GLUE4`/`GLUE6` when the nameserver is in-zone, plus `DS` | `NS`, `A`/`AAAA`, conditional RFC 9461 `SVCB`, `TLSA`, signed zone | Yes |
 | HNS | SYNTH nameserver | `SYNTH4`/`SYNTH6`, plus `DS` | Synthetic `NS`, `A`/`AAAA`, `TLSA`, signed zone | Yes |
 | ICANN | Delegated authoritative DNS | Registrar nameserver/glue, plus `DS` | `NS`, `A`/`AAAA`, `TLSA`, signed zone | Yes |
 | ICANN | SYNTH nameserver | Not applicable | Falls back to delegated authoritative DNS | Not an ICANN mode |
@@ -144,9 +144,10 @@ The UI should explain that `dig +dnssec` alone does not prove validation and tha
 2. Setup status
 3. Parent-side records
 4. Authoritative DNS records with server preset tabs
-5. Verify commands
-6. Web server note
-7. Integrator JSON
+5. Authoritative DoH guidance when applicable
+6. Verify commands
+7. Web server note
+8. Integrator JSON
 
 ## Output interaction policy
 
