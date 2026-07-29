@@ -1,6 +1,7 @@
 {
   "name": "hns-dane-bootstrap-generator",
   "version": "0.2.1",
+  "private": true,
   "description": "Standalone HNS/ICANN DNSSEC + DANE record generator for wallet/registrar and authoritative DNS outputs.",
   "type": "module",
   "scripts": {
