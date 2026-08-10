@@ -42,6 +42,8 @@ uncommitted checkout.
 
 ```bash
 git switch main
+git fetch --prune origin main
+test "$(git rev-parse HEAD)" = "$(git rev-parse origin/main)"
 git status --short
 expected_commit="$(git rev-parse HEAD)"
 expected_tree="$(git show -s --format=%T "$expected_commit")"
@@ -135,9 +137,12 @@ gh release download "$version" \
   --pattern SHA256SUMS \
   --pattern PROVENANCE.json \
   --dir "$verify_dir"
-(cd "$verify_dir" && sha256sum -c SHA256SUMS)
-cmp "$candidate_dir/hns-dane-appliance-${version}.tar.gz" \
-  "$verify_dir/hns-dane-appliance-${version}.tar.gz"
+scripts/verify-appliance-release.sh \
+  --expected-commit "$expected_commit" \
+  --candidate-dir "$verify_dir"
+for candidate_name in "hns-dane-appliance-${version}.tar.gz" SHA256SUMS PROVENANCE.json; do
+  cmp "$candidate_dir/$candidate_name" "$verify_dir/$candidate_name"
+done
 ```
 
 ## 4. Publish and test a private Linode StackScript

@@ -45,6 +45,21 @@ done
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 cd "$repo_root"
 
+canonical_repository="https://github.com/handshake-rs/hns-dane-bootstrap-generator"
+origin_url="$(git remote get-url origin 2>/dev/null)" || {
+  echo "The release source must have a canonical origin remote." >&2
+  exit 1
+}
+normalized_origin_url="${origin_url%/}"
+normalized_origin_url="${normalized_origin_url%.git}"
+case "$normalized_origin_url" in
+  "${canonical_repository}"|git@github.com:handshake-rs/hns-dane-bootstrap-generator|ssh://git@github.com/handshake-rs/hns-dane-bootstrap-generator) ;;
+  *)
+    echo "origin does not identify the canonical handshake-rs/hns-dane-bootstrap-generator repository: ${origin_url}" >&2
+    exit 1
+    ;;
+esac
+
 resolved_commit="$(git rev-parse --verify "${expected_commit}^{commit}")"
 [[ "$resolved_commit" == "$expected_commit" ]] || {
   echo "--expected-commit must name a commit directly, not a tag or another object." >&2
@@ -56,6 +71,16 @@ resolved_commit="$(git rev-parse --verify "${expected_commit}^{commit}")"
 }
 [[ -z "$(git status --porcelain --untracked-files=all)" ]] || {
   echo "The release source checkout must be clean, including untracked files." >&2
+  exit 1
+}
+
+origin_main_ref="refs/remotes/origin/main"
+git rev-parse --verify "${origin_main_ref}^{commit}" >/dev/null 2>&1 || {
+  echo "Missing fetched origin/main history. Fetch the canonical main branch before building." >&2
+  exit 1
+}
+git merge-base --is-ancestor "$expected_commit" "$origin_main_ref" || {
+  echo "--expected-commit is not contained in the fetched canonical origin/main history." >&2
   exit 1
 }
 
@@ -84,8 +109,9 @@ done
 tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/hns-dane-appliance-release.XXXXXX")"
 trap 'rm -rf "$tmp_dir"' EXIT
 archive="${tmp_dir}/${archive_name}"
+archive_tar="${tmp_dir}/hns-dane-appliance-${version}.tar"
 
-git archive \
+git -c tar.umask=0022 archive \
   --format=tar \
   --prefix="$archive_root" \
   "$expected_commit" \
@@ -97,13 +123,14 @@ git archive \
   appliance/uninstall.sh \
   appliance/lib \
   appliance/templates \
-  | gzip -n -9 > "$archive"
+  > "$archive_tar"
 
-embedded_commit="$(gzip -cd "$archive" | git get-tar-commit-id)"
+embedded_commit="$(git get-tar-commit-id < "$archive_tar")"
 [[ "$embedded_commit" == "$expected_commit" ]] || {
   echo "Generated archive does not carry the expected Git commit." >&2
   exit 1
 }
+gzip -n -9 < "$archive_tar" > "$archive"
 
 archive_sha256="$(sha256sum "$archive" | awk '{print $1}')"
 archive_size="$(stat -c '%s' "$archive")"
@@ -120,7 +147,7 @@ cat > "${tmp_dir}/${provenance_name}" <<EOF
   "applianceVersion": "${version}",
   "archiveRoot": "${archive_root}",
   "source": {
-    "repository": "https://github.com/handshake-rs/hns-dane-bootstrap-generator",
+    "repository": "${canonical_repository}",
     "ref": "refs/heads/main",
     "commit": "${expected_commit}",
     "tree": "${tree}",

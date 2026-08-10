@@ -21,12 +21,20 @@
 - Added exact commit/tree/version/checksum/size/source-path provenance,
   byte-for-byte candidate reproduction, and a credential-free manual preflight
   that does not tag, release, publish, deploy, or install npm dependencies.
+- Pinned archive permission normalization, required canonical `origin/main`
+  ancestry for standalone builds and later reproduction, and made public
+  readback validate all three candidate files.
+- Made embedded Git commit validation consume complete temporary tar files so
+  strict `pipefail` cannot turn a successful header check into an intermittent
+  gzip `SIGPIPE` failure.
 - Preserved the public v0.2.1 StackScript and its generated-tag-archive source
   as historical evidence; v0.2.2 requires a separately validated replacement
   StackScript ID before the browser app default changes.
 
-No `v0.2.2` tag, GitHub Release, retained appliance candidate, or public
-StackScript revision has been published from this source candidate yet.
+The credential-free preflight may retain a candidate for seven days without
+creating an npm publication, tag, GitHub Release, deployment, or public
+StackScript revision. Those externally visible release actions remain separate
+maintainer decisions.
 
 ## Released Feature History Through 0.2.1
 

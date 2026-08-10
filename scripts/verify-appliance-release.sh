@@ -50,21 +50,24 @@ actual_files="$(find "$candidate_dir" -mindepth 1 -maxdepth 1 -printf '%f\n' | L
   sha256sum -c SHA256SUMS
 )
 
-embedded_commit="$(gzip -cd "${candidate_dir}/${archive_name}" | git get-tar-commit-id)"
+tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/hns-dane-appliance-verify.XXXXXX")"
+trap 'rm -rf "$tmp_dir"' EXIT
+candidate_tar="${tmp_dir}/candidate.tar"
+gzip -cd "${candidate_dir}/${archive_name}" > "$candidate_tar"
+embedded_commit="$(git get-tar-commit-id < "$candidate_tar")"
 [[ "$embedded_commit" == "$expected_commit" ]] || {
   echo "Candidate archive carries ${embedded_commit:-no commit}, expected ${expected_commit}." >&2
   exit 1
 }
 
-tmp_dir="$(mktemp -d "${TMPDIR:-/tmp}/hns-dane-appliance-verify.XXXXXX")"
-trap 'rm -rf "$tmp_dir"' EXIT
+rebuild_dir="${tmp_dir}/rebuild"
 scripts/release-appliance.sh \
   --expected-commit "$expected_commit" \
-  --output-dir "$tmp_dir" \
+  --output-dir "$rebuild_dir" \
   >/dev/null
 
 for candidate_name in "$archive_name" SHA256SUMS PROVENANCE.json; do
-  cmp --silent "${candidate_dir}/${candidate_name}" "${tmp_dir}/${candidate_name}" || {
+  cmp --silent "${candidate_dir}/${candidate_name}" "${rebuild_dir}/${candidate_name}" || {
     echo "Candidate is not reproducible: ${candidate_name} differs from the exact-source rebuild." >&2
     exit 1
   }

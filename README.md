@@ -5,13 +5,14 @@ A focused web app for producing the few records a domain owner needs to connect 
 Canonical source: [`handshake-rs/hns-dane-bootstrap-generator`](https://github.com/handshake-rs/hns-dane-bootstrap-generator).
 
 Current source is the private-package `0.2.2` application/appliance release
-candidate. It is prepared for an exact-source build but has not been tagged,
-published to npm, built as a retained appliance candidate, or rendered into a
-new public Linode StackScript. The v0.2.2 appliance contract uses a minimal,
-deterministic, exact-commit GitHub Release asset with checksum and provenance;
-it does not use GitHub's generated tag archive. The public StackScript therefore
-remains on historical `v0.2.1` ID `2158182` until the maintainer release,
-private deployment, readback, and replacement publication are complete.
+candidate. Its credential-free preflight may retain an exact-source candidate
+for seven days; that ephemeral workflow artifact is not an npm publication,
+tag, GitHub Release, or public Linode StackScript. The v0.2.2 appliance contract
+uses a minimal, deterministic, exact-commit GitHub Release asset with checksum
+and provenance rather than GitHub's generated tag archive. The checked-in app
+default remains historical `v0.2.1` StackScript ID `2158182`; changing that
+default requires the maintainer release, private deployment, public readback,
+and a separately qualified app build.
 
 Within the Handshake Rust ecosystem, this is an operator-facing control-plane
 tool. It generates deployment inputs and verification commands; it does not

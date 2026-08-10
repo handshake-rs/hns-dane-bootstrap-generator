@@ -56,6 +56,7 @@ const releaseAssetUrlTemplate = 'https://github.com/handshake-rs/hns-dane-bootst
 const installReleaseAssetUrlTemplate = 'https://github.com/${APPLIANCE_REPO}/releases/download/${APPLIANCE_VERSION}/hns-dane-appliance-${APPLIANCE_VERSION}.tar.gz';
 expectEqual('package-lock.json version', packageLock.version, version);
 expectEqual('package-lock.json root package version', packageLock.packages?.['']?.version, version);
+expectEqual('package.json private publication guard', packageJson.private, true);
 expectEqual('appliance/VERSION', read('appliance/VERSION').trim(), taggedVersion);
 
 const installScript = read('appliance/install.sh');
@@ -142,11 +143,15 @@ expectEqual(
 const releaseScript = read('scripts/release-appliance.sh');
 for (const releaseContract of [
   '--expected-commit',
-  'git archive',
+  'git -c tar.umask=0022 archive',
   'gzip -n -9',
   'SHA256SUMS',
   'PROVENANCE.json',
-  'git get-tar-commit-id',
+  'git get-tar-commit-id < "$archive_tar"',
+  'git remote get-url origin',
+  'refs/remotes/origin/main',
+  'git merge-base --is-ancestor',
+  'https://github.com/handshake-rs/hns-dane-bootstrap-generator',
   'refs/heads/main',
   'appliance/install.sh',
   'appliance/lib',
@@ -160,12 +165,14 @@ for (const verificationContract of [
   '--expected-commit',
   '--candidate-dir',
   'sha256sum -c SHA256SUMS',
-  'git get-tar-commit-id',
+  'git get-tar-commit-id < "$candidate_tar"',
   'cmp --silent',
   'scripts/release-appliance.sh',
 ]) {
   expectIncludes(`verify appliance contract (${verificationContract})`, verifyReleaseScript, verificationContract);
 }
+expectExcludes('release appliance pipefail-prone commit reader', releaseScript, '| git get-tar-commit-id');
+expectExcludes('verify appliance pipefail-prone commit reader', verifyReleaseScript, '| git get-tar-commit-id');
 
 const releaseWorkflow = read('.github/workflows/appliance-release-preflight.yml');
 expectIncludes('release workflow manual dispatch', releaseWorkflow, '  workflow_dispatch:');
@@ -173,6 +180,7 @@ expectIncludes('release workflow read-only permission', releaseWorkflow, '  cont
 expectIncludes('release workflow exact commit input', releaseWorkflow, 'expected_commit:');
 expectIncludes('release workflow canonical repository', releaseWorkflow, 'test "$GITHUB_REPOSITORY" = "handshake-rs/hns-dane-bootstrap-generator"');
 expectIncludes('release workflow credential-free checkout', releaseWorkflow, 'persist-credentials: false');
+expectIncludes('release workflow complete main history', releaseWorkflow, 'fetch-depth: 0');
 expectIncludes('release workflow candidate builder', releaseWorkflow, 'scripts/release-appliance.sh');
 expectIncludes('release workflow reproducibility verifier', releaseWorkflow, 'scripts/verify-appliance-release.sh');
 expectIncludes('release workflow short retention', releaseWorkflow, 'retention-days: 7');
@@ -182,6 +190,14 @@ expectExcludes('release workflow npm install', releaseWorkflow, 'npm ci');
 expectExcludes('release workflow tag creation', releaseWorkflow, 'git tag');
 expectExcludes('release workflow GitHub Release mutation', releaseWorkflow, 'gh release');
 expectExcludes('release workflow Linode publication', releaseWorkflow, 'publish-linode-stackscript.sh');
+
+expectIncludes('public release readback verifier', publishDocs, '--candidate-dir "$verify_dir"');
+expectIncludes(
+  'public release readback all candidate files',
+  publishDocs,
+  'for candidate_name in "hns-dane-appliance-${version}.tar.gz" SHA256SUMS PROVENANCE.json; do'
+);
+expectExcludes('README transient retained-candidate status', readme, 'built as a retained appliance candidate');
 
 expectIncludes(
   'historical v0.2.1 tag commit',
