@@ -1,10 +1,17 @@
 # Changelog
 
-## Unreleased
+## 0.2.2 (release candidate)
 
 - Added an `authoritative_doh` browser handoff and default HNS delegated guidance for RFC 9461 discovery, its port 53 bootstrap limit, RFC 8484 on HTTPS 443, local DNSSEC/DANE validation, external-nameserver ownership, and the separately pinned implementation-specific HNS parent bootstrap.
 - Migrated canonical source identity to `handshake-rs` while preserving Denuo Web LLC's separate publishing and signing boundary.
 - Added a locked GitHub Actions qualification gate on Ubuntu 24.04 and Node.js 22 that runs `npm ci` followed by `./scripts/check.sh`.
+- Reconciled the npm lock graph with the pinned runner and advanced the audited
+  transitive `nanoid` release so clean installs and `npm audit` pass together.
+- Kept the npm package private; `0.2.2` is an application/appliance source
+  identity and is not an npm publication.
+
+No `v0.2.2` tag, release archive, or public StackScript revision has been
+published from this candidate yet.
 
 ## Released Feature History Through 0.2.1
 

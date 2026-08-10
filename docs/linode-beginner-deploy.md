@@ -44,7 +44,7 @@ The VPS generates its own TLS and DNSSEC keys locally. The public dashboard show
 
 ## Beginner mode
 
-The v0.2.1 StackScript always provisions `single-node`; it does not expose a
+The v0.2.2 StackScript source always provisions `single-node`; it does not expose a
 deployment-mode field. The resulting appliance creates:
 
 ```text

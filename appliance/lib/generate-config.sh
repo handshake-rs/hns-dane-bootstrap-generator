@@ -52,7 +52,7 @@ generate_config() {
   case "$deployment_mode" in
     single-node) ;;
     primary-node|secondary-node)
-      fail "Two-node mode is documented as a design target but is not implemented in v0.2.1. Use --deployment-mode single-node."
+      fail "Two-node mode is documented as a design target but is not implemented in v0.2.2. Use --deployment-mode single-node."
       ;;
     *) fail "Unsupported deployment mode: $deployment_mode" ;;
   esac

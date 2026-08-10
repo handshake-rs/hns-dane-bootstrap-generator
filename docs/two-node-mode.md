@@ -1,6 +1,6 @@
 # Two-Node Reliable Mode
 
-Two-node mode is a design target, not a completed v0.2.1 feature. The installer fails clearly if `primary-node` or `secondary-node` is selected so the appliance does not pretend to provide redundancy before it actually does.
+Two-node mode is a design target, not a completed v0.2.2 feature. The installer fails clearly if `primary-node` or `secondary-node` is selected so the appliance does not pretend to provide redundancy before it actually does.
 
 ## Target architecture
 
@@ -25,7 +25,7 @@ The intended future flow is:
 5. Secondary configures itself as a Knot secondary.
 6. Primary updates the generated HNS resource JSON to include both `ns1` and `ns2` NS and GLUE records plus the DS.
 
-## v0.2.1 status
+## v0.2.2 status
 
 Implemented:
 

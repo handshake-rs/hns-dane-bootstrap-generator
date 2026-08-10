@@ -13,7 +13,7 @@ APPLIANCE_SRC_DIR="${APPLIANCE_SRC_DIR:-$(cd "$SCRIPT_DIR/.." && pwd)}"
 if [[ -f "$APPLIANCE_SRC_DIR/VERSION" ]]; then
   HNS_DANE_VERSION="$(tr -d '[:space:]' < "$APPLIANCE_SRC_DIR/VERSION")"
 else
-  HNS_DANE_VERSION="${HNS_DANE_VERSION:-v0.2.1}"
+  HNS_DANE_VERSION="${HNS_DANE_VERSION:-v0.2.2}"
 fi
 
 : "${HNS_DANE_ETC:=/etc/hns-dane-appliance}"

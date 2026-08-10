@@ -4,6 +4,12 @@ A focused web app for producing the few records a domain owner needs to connect 
 
 Canonical source: [`handshake-rs/hns-dane-bootstrap-generator`](https://github.com/handshake-rs/hns-dane-bootstrap-generator).
 
+Current source is the private-package `0.2.2` application/appliance release
+candidate. It is prepared for an exact-source build but has not been tagged,
+published to npm, or rendered into a new public Linode StackScript. The public
+StackScript may therefore remain on the prior `v0.2.1` release until the
+maintainer release procedure is completed.
+
 Within the Handshake Rust ecosystem, this is an operator-facing control-plane
 tool. It generates deployment inputs and verification commands; it does not
 resolve browser requests, classify HNS versus ICANN, crawl the public

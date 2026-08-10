@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-APPLIANCE_VERSION="${APPLIANCE_VERSION:-v0.2.1}"
+APPLIANCE_VERSION="${APPLIANCE_VERSION:-v0.2.2}"
 APPLIANCE_REPO="${APPLIANCE_REPO:-handshake-rs/hns-dane-bootstrap-generator}"
 INSTALL_LIB_DIR="${INSTALL_LIB_DIR:-/usr/local/lib/hns-dane-appliance}"
 

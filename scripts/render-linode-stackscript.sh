@@ -3,7 +3,7 @@ set -Eeuo pipefail
 
 usage() {
   cat >&2 <<'EOF'
-Usage: render-linode-stackscript.sh --sha256 SHA256 [--version v0.2.1]
+Usage: render-linode-stackscript.sh --sha256 SHA256 [--version v0.2.2]
 
 Writes the release-pinned StackScript to stdout.
 EOF

@@ -9,14 +9,14 @@ This is a maintainer/release step, not something beginners should do.
 Create the git tag that matches `appliance/VERSION`, then push it.
 
 ```bash
-git tag v0.2.1
-git push origin v0.2.1
+git tag v0.2.2
+git push origin v0.2.2
 ```
 
 ## 2. Compute the GitHub release archive hash
 
 ```bash
-scripts/sha256-release.sh https://github.com/handshake-rs/hns-dane-bootstrap-generator/archive/refs/tags/v0.2.1.tar.gz
+scripts/sha256-release.sh https://github.com/handshake-rs/hns-dane-bootstrap-generator/archive/refs/tags/v0.2.2.tar.gz
 ```
 
 The StackScript must be pinned to this hash before publication.
@@ -49,7 +49,7 @@ Debian 12
 Ubuntu 24.04 LTS
 
 Revision Note:
-v0.2.1
+v0.2.2
 ```
 
 Do not use the Handshake domain, such as `denuoweb/`, as the StackScript label. The domain is entered later when creating a Linode from the StackScript, in the generated `hns_name` UDF field.
@@ -77,7 +77,8 @@ The command prints:
 
 ## 4. Configure the web app
 
-The public StackScript ID is checked into the app as the default:
+The prior public StackScript ID is checked into the app as the default until a
+maintainer completes this procedure and reads back the replacement/revision:
 
 ```text
 2158182

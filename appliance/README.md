@@ -15,7 +15,7 @@ The appliance turns one Debian 13 or Debian 12 Linode into:
 
 The installer does not ask for wallet seeds, wallet private keys, Linode API tokens, registrar credentials, user-supplied TLS private keys, user-supplied DNSSEC private keys, payment data, or credit card data.
 
-## Supported v0.2.1 path
+## Supported v0.2.2 source path
 
 Debian 13 is the primary Linode target. Debian 12 and Ubuntu 24.04 are accepted if the same packages and service names are available.
 
@@ -79,4 +79,4 @@ hns-dane show-config
 
 DNSSEC parent-facing rollover is frozen by default. TLS private-key rotation is also frozen by default. Both are deliberate: the HNS parent resource is manually updated by the user, so changing the DNSSEC key or HTTPS key without a staged update can break validation.
 
-Two-node reliable mode is documented as a design target in [Two-Node Reliable Mode](../docs/two-node-mode.md). v0.2.1 fails clearly if `primary-node` or `secondary-node` is selected because redundancy is not complete yet.
+Two-node reliable mode is documented as a design target in [Two-Node Reliable Mode](../docs/two-node-mode.md). v0.2.2 fails clearly if `primary-node` or `secondary-node` is selected because redundancy is not complete yet.

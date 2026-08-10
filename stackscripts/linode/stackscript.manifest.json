@@ -3,5 +3,5 @@
   "description": "One-click HNS DANE server for a single Handshake name. Installs Knot DNS authoritative DNSSEC, dnsdist authoritative DoH, TLSA, nginx dashboard, local verification, and copy-paste HNS resource commands. Never asks for wallet seeds, Linode API tokens, registrar credentials, or payment data.",
   "images": ["linode/debian13", "linode/debian12", "linode/ubuntu24.04"],
   "is_public": true,
-  "rev_note": "v0.2.1"
+  "rev_note": "v0.2.2"
 }
