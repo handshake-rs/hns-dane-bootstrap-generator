@@ -6,7 +6,7 @@ usage() {
 Usage: publish-linode-stackscript.sh --sha256 SHA256 [--public] [--version v0.2.2]
 
 Maintainer-only helper. Requires LINODE_API_TOKEN with stackscripts:read_write.
-It publishes the thin, release-hash-pinned StackScript to the maintainer's Linode account.
+It publishes the thin, appliance-asset-hash-pinned StackScript to the maintainer's Linode account.
 EOF
 }
 

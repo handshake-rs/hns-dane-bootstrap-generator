@@ -16,9 +16,17 @@
   npm, appliance, StackScript, and release-documentation metadata.
 - Corrected the manual StackScript instructions to distinguish rendered shell
   output from the publisher's JSON response.
+- Replaced the ambiguous full-checkout tarball/tag-archive path with a minimal,
+  deterministic `hns-dane-appliance-v0.2.2.tar.gz` Release asset contract.
+- Added exact commit/tree/version/checksum/size/source-path provenance,
+  byte-for-byte candidate reproduction, and a credential-free manual preflight
+  that does not tag, release, publish, deploy, or install npm dependencies.
+- Preserved the public v0.2.1 StackScript and its generated-tag-archive source
+  as historical evidence; v0.2.2 requires a separately validated replacement
+  StackScript ID before the browser app default changes.
 
-No `v0.2.2` tag, release archive, or public StackScript revision has been
-published from this candidate yet.
+No `v0.2.2` tag, GitHub Release, retained appliance candidate, or public
+StackScript revision has been published from this source candidate yet.
 
 ## Released Feature History Through 0.2.1
 

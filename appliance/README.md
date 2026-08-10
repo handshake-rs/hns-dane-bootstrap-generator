@@ -79,4 +79,14 @@ hns-dane show-config
 
 DNSSEC parent-facing rollover is frozen by default. TLS private-key rotation is also frozen by default. Both are deliberate: the HNS parent resource is manually updated by the user, so changing the DNSSEC key or HTTPS key without a staged update can break validation.
 
-Two-node reliable mode is documented as a design target in [Two-Node Reliable Mode](../docs/two-node-mode.md). v0.2.2 fails clearly if `primary-node` or `secondary-node` is selected because redundancy is not complete yet.
+Two-node reliable mode is documented as a design target in [Two-Node Reliable Mode](https://github.com/handshake-rs/hns-dane-bootstrap-generator/blob/v0.2.2/docs/two-node-mode.md). v0.2.2 fails clearly if `primary-node` or `secondary-node` is selected because redundancy is not complete yet.
+
+## Release artifact
+
+The v0.2.2 appliance is distributed as the project-built minimal GitHub Release
+asset `hns-dane-appliance-v0.2.2.tar.gz`, not GitHub's generated tag source
+archive. Its `SHA256SUMS` and deterministic `PROVENANCE.json` bind the exact
+artifact to a clean `main` commit, tree, version, size, archive root, and fixed
+runtime source paths. `scripts/release-appliance.sh` builds it, and the
+credential-free manual preflight rebuilds it before retaining a seven-day
+candidate. See [Publish The Linode StackScript](https://github.com/handshake-rs/hns-dane-bootstrap-generator/blob/v0.2.2/docs/linode-stackscript-publish.md).

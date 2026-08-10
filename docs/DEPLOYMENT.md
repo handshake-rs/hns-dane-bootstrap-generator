@@ -28,7 +28,13 @@ stackscripts/linode/
 docs/linode-beginner-deploy.md
 ```
 
-The StackScript is intentionally thin and fails closed until a real tagged release archive SHA256 replaces `REPLACE_WITH_RELEASE_TARBALL_SHA256`.
+The StackScript is intentionally thin and fails closed until the SHA256 of the
+project-built, exact-commit GitHub Release asset replaces
+`REPLACE_WITH_RELEASE_TARBALL_SHA256`. For v0.2.2 that canonical asset is
+`hns-dane-appliance-v0.2.2.tar.gz`; GitHub's generated tag source archive is not
+an appliance payload. The credential-free manual preflight binds the candidate
+to its version, commit, tree, checksum, size, and fixed source paths before any
+tag, Release, or Linode publication.
 
 The static app has the public StackScript ID checked in for the integrated `Open Linode` flow. To override it for a future replacement StackScript, build with:
 

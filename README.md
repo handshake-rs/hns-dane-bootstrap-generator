@@ -6,9 +6,12 @@ Canonical source: [`handshake-rs/hns-dane-bootstrap-generator`](https://github.c
 
 Current source is the private-package `0.2.2` application/appliance release
 candidate. It is prepared for an exact-source build but has not been tagged,
-published to npm, or rendered into a new public Linode StackScript. The public
-StackScript may therefore remain on the prior `v0.2.1` release until the
-maintainer release procedure is completed.
+published to npm, built as a retained appliance candidate, or rendered into a
+new public Linode StackScript. The v0.2.2 appliance contract uses a minimal,
+deterministic, exact-commit GitHub Release asset with checksum and provenance;
+it does not use GitHub's generated tag archive. The public StackScript therefore
+remains on historical `v0.2.1` ID `2158182` until the maintainer release,
+private deployment, readback, and replacement publication are complete.
 
 Within the Handshake Rust ecosystem, this is an operator-facing control-plane
 tool. It generates deployment inputs and verification commands; it does not

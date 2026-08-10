@@ -18,7 +18,7 @@ TMP_DIR=""
 if [[ ! -f "$APPLIANCE_SRC_DIR/lib/common.sh" ]]; then
   TMP_DIR="$(mktemp -d)"
   archive="$TMP_DIR/source.tar.gz"
-  archive_url="${APPLIANCE_ARCHIVE_URL:-https://github.com/${APPLIANCE_REPO}/archive/refs/tags/${APPLIANCE_VERSION}.tar.gz}"
+  archive_url="${APPLIANCE_ARCHIVE_URL:-https://github.com/${APPLIANCE_REPO}/releases/download/${APPLIANCE_VERSION}/hns-dane-appliance-${APPLIANCE_VERSION}.tar.gz}"
   curl -fsSL "$archive_url" -o "$archive"
   if [[ -n "${APPLIANCE_ARCHIVE_SHA256:-}" ]]; then
     echo "${APPLIANCE_ARCHIVE_SHA256}  ${archive}" | sha256sum -c -

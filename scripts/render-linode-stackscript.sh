@@ -25,6 +25,12 @@ done
   echo "--sha256 must be a 64-character SHA256 digest." >&2
   exit 2
 }
+[[ "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+  echo "--version must be a stable v-prefixed semantic version." >&2
+  exit 2
+}
+
+sha256="${sha256,,}"
 
 sed \
   -e "s/APPLIANCE_VERSION=\"[^\"]*\"/APPLIANCE_VERSION=\"${version}\"/" \

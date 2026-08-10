@@ -1,0 +1,92 @@
+name: Appliance release preflight
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_commit:
+        description: Exact lowercase 40-character commit on main to package
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: appliance-release-preflight-${{ inputs.expected_commit }}
+  cancel-in-progress: false
+
+jobs:
+  appliance-candidate:
+    name: Exact-source appliance candidate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Validate requested source
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: |
+          if ! [[ "$EXPECTED_COMMIT" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "expected_commit must be one lowercase 40-character Git commit" >&2
+            exit 1
+          fi
+          test "$GITHUB_REPOSITORY" = "handshake-rs/hns-dane-bootstrap-generator"
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_SHA" = "$EXPECTED_COMMIT"
+
+      - name: Check out exact source
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: ${{ inputs.expected_commit }}
+          persist-credentials: false
+
+      - name: Verify exact clean checkout
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$EXPECTED_COMMIT"
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Install pinned Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "22"
+
+      - name: Validate candidate source metadata and shell syntax
+        run: |
+          node scripts/check-version-consistency.mjs
+          bash -n appliance/install.sh appliance/uninstall.sh appliance/lib/*.sh appliance/tests/*.sh scripts/*.sh stackscripts/linode/hns-dane-appliance-bootstrap.sh
+
+      - name: Build and reproduce exact-source candidate
+        env:
+          EXPECTED_COMMIT: ${{ inputs.expected_commit }}
+        run: |
+          scripts/release-appliance.sh \
+            --expected-commit "$EXPECTED_COMMIT" \
+            --output-dir "$RUNNER_TEMP/appliance-candidate"
+          scripts/verify-appliance-release.sh \
+            --expected-commit "$EXPECTED_COMMIT" \
+            --candidate-dir "$RUNNER_TEMP/appliance-candidate"
+
+      - name: Render and validate the release-pinned StackScript
+        run: |
+          version="$(tr -d '[:space:]' < appliance/VERSION)"
+          sha256="$(awk '{print $1}' "$RUNNER_TEMP/appliance-candidate/SHA256SUMS")"
+          rendered="$RUNNER_TEMP/hns-dane-appliance-stackscript.sh"
+          scripts/render-linode-stackscript.sh \
+            --version "$version" \
+            --sha256 "$sha256" \
+            > "$rendered"
+          bash -n "$rendered"
+          grep -F "APPLIANCE_VERSION=\"${version}\"" "$rendered"
+          grep -F "APPLIANCE_ARCHIVE_SHA256=\"${sha256}\"" "$rendered"
+          grep -F 'APPLIANCE_ARCHIVE_URL="https://github.com/handshake-rs/hns-dane-bootstrap-generator/releases/download/${APPLIANCE_VERSION}/hns-dane-appliance-${APPLIANCE_VERSION}.tar.gz"' "$rendered"
+          ! grep -Fq 'REPLACE_WITH_RELEASE_TARBALL_SHA256' "$rendered"
+
+      - name: Retain exact-source appliance candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: hns-dane-appliance-candidate-${{ inputs.expected_commit }}
+          path: ${{ runner.temp }}/appliance-candidate/*
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0
