@@ -248,7 +248,7 @@ describe('bootstrap generator', () => {
     expect(bobOption?.value).not.toContain('hnsdns=1');
     const genericOption = result.parentRecords.find((line) => line.presentation?.tabId === 'generic');
     expect(genericOption?.presentation?.tabLabel).toBe('Other wallets');
-    expect(genericOption?.value).toContain('does not currently qualify a browser-extension control');
+    expect(genericOption?.value).toContain('No browser-extension name-resource update control is currently qualified');
     expect(genericOption?.value).toContain('explicitly supports creating and broadcasting HNS name-resource UPDATE transactions');
     expect(genericOption?.value).toContain('GLUE4: ns=ns1.dane. address=203.0.113.10');
     expect(genericOption?.value).not.toMatch(/const wallet =|dapp\/API equivalent/);

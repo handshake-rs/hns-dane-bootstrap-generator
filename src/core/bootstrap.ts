@@ -379,7 +379,7 @@ function buildGenericWalletOption(parentDraft: HnsParentRecordDraft[], domain: s
   return {
     value: [
       'Other HNS wallet or tool (verify support first):',
-      `1. This project does not currently qualify a browser-extension control for updating the on-chain resource of ${name}.`,
+      `1. No browser-extension name-resource update control is currently qualified by this project for ${name}.`,
       '2. Use another wallet or tool only when its current documentation explicitly supports creating and broadcasting HNS name-resource UPDATE transactions.',
       '3. Compare its transaction preview with the concrete records below before authorizing it. If support is uncertain, use the generated hsw-cli / hsd-cli commands.',
       '',
