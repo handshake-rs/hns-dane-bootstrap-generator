@@ -191,6 +191,17 @@ expectExcludes('release workflow tag creation', releaseWorkflow, 'git tag');
 expectExcludes('release workflow GitHub Release mutation', releaseWorkflow, 'gh release');
 expectExcludes('release workflow Linode publication', releaseWorkflow, 'publish-linode-stackscript.sh');
 
+expectIncludes(
+  'StackScript SHA256 format guard',
+  stackscript,
+  '[[ ! "${APPLIANCE_ARCHIVE_SHA256}" =~ ^[a-f0-9]{64}$ ]]'
+);
+expectExcludes(
+  'StackScript placeholder comparison',
+  stackscript,
+  '[[ "${APPLIANCE_ARCHIVE_SHA256}" == "REPLACE_WITH_RELEASE_TARBALL_SHA256" ]]'
+);
+
 expectIncludes('public release readback verifier', publishDocs, '--candidate-dir "$verify_dir"');
 expectIncludes(
   'public release readback all candidate files',

@@ -16,8 +16,8 @@ APPLIANCE_VERSION="v0.2.2"
 APPLIANCE_ARCHIVE_URL="https://github.com/handshake-rs/hns-dane-bootstrap-generator/releases/download/${APPLIANCE_VERSION}/hns-dane-appliance-${APPLIANCE_VERSION}.tar.gz"
 APPLIANCE_ARCHIVE_SHA256="REPLACE_WITH_RELEASE_TARBALL_SHA256"
 
-if [[ "${APPLIANCE_ARCHIVE_SHA256}" == "REPLACE_WITH_RELEASE_TARBALL_SHA256" ]]; then
-  echo "This StackScript is pinned to ${APPLIANCE_VERSION}, but the appliance Release asset SHA256 has not been filled in yet." >&2
+if [[ ! "${APPLIANCE_ARCHIVE_SHA256}" =~ ^[a-f0-9]{64}$ ]]; then
+  echo "This StackScript is pinned to ${APPLIANCE_VERSION}, but it does not contain a valid appliance Release asset SHA256." >&2
   echo "Build the exact-commit appliance candidate, verify its checksum, then render this file." >&2
   exit 1
 fi
