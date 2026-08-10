@@ -9,6 +9,13 @@
   transitive `nanoid` release so clean installs and `npm audit` pass together.
 - Kept the npm package private; `0.2.2` is an application/appliance source
   identity and is not an npm publication.
+- Replaced unqualified browser-extension name-update instructions with
+  tool-neutral records and an explicit requirement to verify current UPDATE
+  support before broadcasting.
+- Added a lightweight consistency check for the candidate version carried by
+  npm, appliance, StackScript, and release-documentation metadata.
+- Corrected the manual StackScript instructions to distinguish rendered shell
+  output from the publisher's JSON response.
 
 No `v0.2.2` tag, release archive, or public StackScript revision has been
 published from this candidate yet.

@@ -5,7 +5,7 @@ export type DnsServerPreset = 'generic-zone' | 'hosted-dns' | 'powerdns' | 'knot
 export type CheckStatus = 'ok' | 'warn' | 'missing';
 export type Severity = 'info' | 'warning' | 'error';
 export type OutputAudience = 'parent' | 'authoritative' | 'server' | 'web' | 'verify' | 'integrator';
-export type HnsWalletOptionId = 'cli' | 'bob' | 'shake';
+export type HnsWalletOptionId = 'cli' | 'bob' | 'generic';
 export type OutputTabKind = 'hns-wallet-option' | 'authoritative-dns-option';
 export type OutputTabId = HnsWalletOptionId | DnsServerPreset;
 

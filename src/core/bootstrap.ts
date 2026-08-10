@@ -343,19 +343,6 @@ function formatHnsRecordForUi(record: HnsParentRecordDraft): string {
   }
 }
 
-function buildShakeWalletExample(parentDraft: HnsParentRecordDraft[], domain: string): string[] {
-  if (parentDraft.length === 0) return [];
-  const name = JSON.stringify(rootless(domain));
-  const records = JSON.stringify(parentDraft, null, 2);
-
-  return [
-    '',
-    'Shake Wallet dapp/API equivalent:',
-    'const wallet = await shake.connect();',
-    `const tx = await wallet.sendUpdate(${name}, ${records});`
-  ];
-}
-
 function hnsUiRecordLines(parentDraft: HnsParentRecordDraft[]): string[] {
   return parentDraft.length > 0
     ? parentDraft.map((record) => `- ${formatHnsRecordForUi(record)}`)
@@ -386,27 +373,26 @@ function buildBobWalletOption(parentDraft: HnsParentRecordDraft[], domain: strin
   };
 }
 
-function buildShakeWalletOption(parentDraft: HnsParentRecordDraft[], domain: string): GeneratedLine {
+function buildGenericWalletOption(parentDraft: HnsParentRecordDraft[], domain: string): GeneratedLine {
   const name = rootless(domain);
 
   return {
     value: [
-      'Shake Wallet / LearnHNS browser wallet UI:',
-      `1. Open the extension and unlock the wallet that owns ${name}.`,
-      '2. Select the name, open the on-chain records/update view, and add the same concrete records.',
-      '3. Confirm the update popup before broadcasting.',
+      'Other HNS wallet or tool (verify support first):',
+      `1. This project does not currently qualify a browser-extension control for updating the on-chain resource of ${name}.`,
+      '2. Use another wallet or tool only when its current documentation explicitly supports creating and broadcasting HNS name-resource UPDATE transactions.',
+      '3. Compare its transaction preview with the concrete records below before authorizing it. If support is uncertain, use the generated hsw-cli / hsd-cli commands.',
       '',
-      'Concrete parent records to enter:',
-      ...hnsUiRecordLines(parentDraft),
-      ...buildShakeWalletExample(parentDraft, domain)
+      'Tool-neutral parent records to review:',
+      ...hnsUiRecordLines(parentDraft)
     ].join('\n'),
     explanation: parentDraft.length > 0
-      ? 'Shake Wallet and LearnHNS Wallet can update the same HNS name resource through the browser extension UI. Use the concrete parent records shown here and confirm the wallet prompt before broadcasting.'
-      : 'Fill in concrete NS, GLUE, SYNTH, or DS records before using a wallet UI. Do not submit an empty name resource unless you mean to clear existing records.',
+      ? 'These records are tool-neutral. This project does not claim that a particular browser extension can submit HNS name-resource updates; verify support in the wallet or tool\'s current documentation before broadcasting.'
+      : 'No browser-extension name-resource update control is currently qualified by this project. Fill in concrete records and verify explicit UPDATE support before using another wallet or tool.',
     presentation: {
       kind: 'hns-wallet-option',
-      tabId: 'shake',
-      tabLabel: 'Shake Wallet'
+      tabId: 'generic',
+      tabLabel: 'Other wallets'
     }
   };
 }
@@ -566,7 +552,7 @@ export async function generateBootstrap(input: BootstrapInput): Promise<Bootstra
   if (input.domainType === 'hns') {
     parentRecords.push(buildHnsWalletCommand(parentDraft, normalizedDomain));
     parentRecords.push(buildBobWalletOption(parentDraft, normalizedDomain));
-    parentRecords.push(buildShakeWalletOption(parentDraft, normalizedDomain));
+    parentRecords.push(buildGenericWalletOption(parentDraft, normalizedDomain));
   }
 
   if (effectiveMode === 'delegated' || effectiveMode === 'hns-inline') {

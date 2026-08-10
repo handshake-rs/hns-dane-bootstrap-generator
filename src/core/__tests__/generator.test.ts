@@ -246,11 +246,12 @@ describe('bootstrap generator', () => {
     expect(bobOption?.value).toContain('Bob Wallet desktop UI');
     expect(bobOption?.value).toContain('GLUE4: ns=ns1.dane. address=203.0.113.10');
     expect(bobOption?.value).not.toContain('hnsdns=1');
-    const shakeOption = result.parentRecords.find((line) => line.presentation?.tabId === 'shake');
-    expect(shakeOption?.value).toContain('Shake Wallet / LearnHNS browser wallet UI');
-    expect(shakeOption?.value).toContain('const tx = await wallet.sendUpdate("dane", [');
-    expect(shakeOption?.value).toContain('"type": "GLUE4"');
-    expect(shakeOption?.value).not.toContain('"type": "TXT"');
+    const genericOption = result.parentRecords.find((line) => line.presentation?.tabId === 'generic');
+    expect(genericOption?.presentation?.tabLabel).toBe('Other wallets');
+    expect(genericOption?.value).toContain('does not currently qualify a browser-extension control');
+    expect(genericOption?.value).toContain('explicitly supports creating and broadcasting HNS name-resource UPDATE transactions');
+    expect(genericOption?.value).toContain('GLUE4: ns=ns1.dane. address=203.0.113.10');
+    expect(genericOption?.value).not.toMatch(/const wallet =|dapp\/API equivalent/);
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN A 203.0.113.20'))).toBe(true);
     expect(result.authoritativeRecords.some((line) => line.value.includes(' IN TLSA 3 1 1 '))).toBe(true);
     const authoritativeDohRecord = result.authoritativeRecords.find((line) => line.value === '_dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}');
@@ -451,8 +452,9 @@ describe('bootstrap generator', () => {
     expect(walletCommand?.value).not.toContain('{"records":[]}');
     const bobOption = result.parentRecords.find((line) => line.presentation?.tabId === 'bob');
     expect(bobOption?.value).toContain('Do not submit an empty name resource');
-    const shakeOption = result.parentRecords.find((line) => line.presentation?.tabId === 'shake');
-    expect(shakeOption?.value).not.toContain('sendUpdate("example", [])');
+    const genericOption = result.parentRecords.find((line) => line.presentation?.tabId === 'generic');
+    expect(genericOption?.value).toContain('No browser-extension name-resource update control is currently qualified');
+    expect(genericOption?.value).toContain('Fill in concrete NS, GLUE, SYNTH, or DS records first');
   });
 
   it('keeps website IP hints technically distinct from A and AAAA records', async () => {

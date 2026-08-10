@@ -4,6 +4,7 @@ set -eu
 repo_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cd "$repo_root"
 
+npm run check:version
 npm audit
 npm run typecheck
 npm test

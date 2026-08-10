@@ -64,7 +64,12 @@ scripts/render-linode-stackscript.sh --sha256 <release-tarball-sha256> > /tmp/hn
 
 Open `/tmp/hns-dane-appliance-stackscript.sh` and paste its contents into the Cloud Manager `Script` field. Do not paste `stackscripts/linode/hns-dane-appliance-bootstrap.sh` directly unless the placeholder hash has already been replaced; the committed source intentionally fails closed.
 
-The command prints:
+The render command writes only the StackScript shell body to the file; it does
+not print Linode publication metadata. When
+`scripts/publish-linode-stackscript.sh` is used instead of the manual form, that
+publishing command prints JSON like this after the Linode API accepts the new
+StackScript. A replacement receives a new API-assigned ID, so do not assume it
+will reuse the existing public ID shown in this example:
 
 ```json
 {
