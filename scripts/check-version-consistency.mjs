@@ -210,23 +210,6 @@ expectIncludes(
 );
 expectExcludes('README transient retained-candidate status', readme, 'built as a retained appliance candidate');
 
-expectIncludes(
-  'historical v0.2.1 tag commit',
-  publishDocs,
-  'f8ad194609708ba0fdec1f5884ad6871557cdec2'
-);
-expectIncludes(
-  'historical v0.2.1 tree',
-  publishDocs,
-  'c61e2cb21f275163d7f5ececf4010b50592684fa'
-);
-expectIncludes('historical public StackScript ID', publishDocs, '2158182');
-expectIncludes(
-  'historical v0.2.1 generated archive URL',
-  publishDocs,
-  'https://github.com/denuoweb/hns-dane-bootstrap-generator/archive/refs/tags/${APPLIANCE_VERSION}.tar.gz'
-);
-
 if (failures.length > 0) {
   console.error('Version consistency check failed:');
   for (const failure of failures) console.error(`- ${failure}`);

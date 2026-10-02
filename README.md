@@ -9,10 +9,9 @@ candidate. Its credential-free preflight may retain an exact-source candidate
 for seven days; that ephemeral workflow artifact is not an npm publication,
 tag, GitHub Release, or public Linode StackScript. The v0.2.2 appliance contract
 uses a minimal, deterministic, exact-commit GitHub Release asset with checksum
-and provenance rather than GitHub's generated tag archive. The checked-in app
-default remains historical `v0.2.1` StackScript ID `2158182`; changing that
-default requires the maintainer release, private deployment, public readback,
-and a separately qualified app build.
+and provenance rather than GitHub's generated tag archive. Configure the app with the ID returned by the qualified StackScript publication.
+A change to the app default requires private deployment, public readback, and
+a separately qualified app build.
 
 Within the Handshake Rust ecosystem, this is an operator-facing control-plane
 tool. It generates deployment inputs and verification commands; it does not
@@ -44,7 +43,7 @@ The app keeps the workflow simple:
 
 ## Linode/Akamai appliance path
 
-This repo now includes an early production-MVP appliance path for beginners who want a self-hosted authoritative DNSSEC + DANE server on a Linode they own:
+The repository includes a single-node appliance path for beginners who want a self-hosted authoritative DNSSEC + DANE server on a Linode they own:
 
 - `stackscripts/linode/hns-dane-appliance-bootstrap.sh` is a thin, hash-verified StackScript bootstrapper.
 - `appliance/install.sh` is the real versioned installer.
@@ -183,7 +182,10 @@ For DANE setup, choose **Delegated authoritative DNS** when the wallet or regist
 6. Enable DNSSEC signing on that authoritative zone.
 7. Publish the DS at the parent: HNS wallet/name resource for HNS, registrar/parent zone for ICANN.
 
-Provider fit matters. The DNS host must support authoritative DNS, DNSSEC signing, DS or DNSKEY export, and custom `TLSA` records. Cloudflare, Amazon Route 53, Google Cloud DNS, and DNSimple document DNSSEC plus TLSA-capable DNS paths. DigitalOcean DNS is not a fit for this DANE path as of its June 2026 docs because it does not support DNSSEC. Registrars such as Namecheap or GoDaddy may still be usable as the parent-side place to enter DS records while another DNS host serves the signed TLSA zone.
+The DNS host must support authoritative DNS, DNSSEC signing, DS or DNSKEY
+export, and custom TLSA records. Verify those capabilities in the provider's
+current documentation before deploying. The registrar or HNS wallet holds
+parent delegation and DS; TLSA belongs in the signed authoritative child zone.
 
 For self-hosted examples, see the Debian/BIND and Windows Server DNS quick starts in [Web Admin Guide](docs/WEB_ADMIN_GUIDE.md).
 
@@ -378,6 +380,9 @@ Accepted aliases:
 - **DRY**: one generator core feeds the UI, docs examples, tests, and integrator JSON.
 - **KISS**: no wallet broadcasting, registrar automation, DNS hosting panel, or live resolver dependency.
 - **SOLID**: domain normalization, DNSSEC, TLSA, server presets, and UI rendering are separate modules.
+
+See [DNSSEC and DANE standards](docs/STANDARDS.md) for the current record and
+validation contracts.
 
 ## Standards anchors
 

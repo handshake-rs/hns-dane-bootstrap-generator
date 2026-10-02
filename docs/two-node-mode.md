@@ -1,6 +1,6 @@
 # Two-Node Reliable Mode
 
-Two-node mode is a design target, not a completed v0.2.2 feature. The installer fails clearly if `primary-node` or `secondary-node` is selected so the appliance does not pretend to provide redundancy before it actually does.
+Two-node mode is unsupported in the current appliance. The installer fails clearly if `primary-node` or `secondary-node` is selected so the appliance does not pretend to provide redundancy before it actually does.
 
 ## Target architecture
 

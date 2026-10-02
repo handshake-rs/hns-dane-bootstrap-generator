@@ -6,8 +6,9 @@ For v0.2.2, the project-built minimal Release asset is canonical; GitHub's gener
 
 The StackScript UDF values must not contain wallet seeds, private keys, Linode API tokens, cloud API tokens, registrar credentials, or payment data. The `hsd_wallet_id` and `hsd_account_name` fields are non-secret local hsd routing hints used only in generated wallet instructions. The normal hsd defaults are wallet ID `primary` and account name `default`.
 
-For v0.2.2 source, the StackScript always installs the single-node appliance. Two-node mode is documented as a future design target. The checked-in bootstrap intentionally retains a fail-closed placeholder hash; only a rendered script pinned to the read-back Release asset may be published.
+For v0.2.2 source, the StackScript always installs the single-node appliance. Only single-node mode is supported. The checked-in bootstrap intentionally retains a fail-closed placeholder hash; only a rendered script pinned to the read-back Release asset may be published.
 
 Use `scripts/publish-linode-stackscript.sh` to publish this StackScript from a release hash. After publishing, build the web app with `VITE_LINODE_STACKSCRIPT_ID=<id>` so the UI can show an `Open Linode` button.
 
-The public v0.2.1 StackScript remains historical ID `2158182` and used the legacy GitHub-generated tag archive mechanism. Do not repoint it. The v0.2.2 migration creates and validates a replacement StackScript with a new ID before the browser app default changes. See [Publish The Linode StackScript](../../docs/linode-stackscript-publish.md) for the exact commit/tree/checksum/provenance contract and historical tag evidence.
+Publish a new validated StackScript from the exact release asset, then configure
+the web app with its read-back ID. See [the publication procedure](../../docs/linode-stackscript-publish.md).

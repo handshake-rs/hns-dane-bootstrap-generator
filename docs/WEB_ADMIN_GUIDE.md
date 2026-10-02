@@ -230,12 +230,10 @@ The HNS wallet gets `SYNTH4 203.0.113.10` and `DS`. It does not get website `A` 
 
 Provider support changes, so confirm the current docs before committing a production name. For this app's DANE flow, the DNS host must support authoritative DNS, DNSSEC signing, DS or DNSKEY export, and custom `TLSA` records.
 
-- **Cloudflare DNS**: create the zone, use Cloudflare's assigned nameservers or an eligible custom-nameserver setup, add `A`/`AAAA` plus `TLSA`, enable DNSSEC, then copy Cloudflare's DS record to the parent. Cloudflare documents DNSSEC signing and supported DNS record types including `TLSA`.
-- **Amazon Route 53**: create a public hosted zone, use its assigned NS set, add `A`/`AAAA` plus `TLSA`, enable DNSSEC signing with a KSK/KMS setup, then publish the DS values Route 53 provides. Route 53 documents `TLSA` as a supported record type.
-- **Google Cloud DNS**: create a public managed zone, add `A`/`AAAA` plus `TLSA`, enable DNSSEC on the managed zone, then publish the DS at the parent. Google documents `TLSA` and warns to use it only in DNSSEC-secured zones.
-- **DNSimple**: use DNSimple nameservers, enable DNSSEC, and add `TLSA` in the DNS record editor. DNSimple notes TLSA support is for DNSimple nameservers.
-- **DigitalOcean DNS**: not suitable for this exact DNSSEC + DANE path as of DigitalOcean's June 2026 support docs because DigitalOcean DNS does not support DNSSEC. You can still host the web server or an authoritative DNS daemon on DigitalOcean infrastructure, but use a DNS service that signs the zone and publishes `TLSA`.
-- **Namecheap, GoDaddy, and similar registrars**: treat these as the parent-side control panel when DNS is hosted elsewhere. Enter custom nameservers and DS records there, but put `TLSA` on the authoritative DNS host. Do not assume the registrar's bundled DNS product can host DANE unless its current record-type list includes `TLSA` and DNSSEC signing.
+Publish A/AAAA and TLSA in the authoritative zone, enable DNSSEC signing,
+then publish the exported DS at the parent. Confirm the assigned nameservers
+and validate the complete delegation. A registrar control panel can manage
+parent NS and DS while another provider hosts the signed child zone.
 
 Provider reference docs:
 
@@ -243,7 +241,6 @@ Provider reference docs:
 - [Amazon Route 53 DNSSEC signing](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec-enable-signing.html) and [Route 53 record types](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/ResourceRecordTypes.html)
 - [Google Cloud DNSSEC](https://docs.cloud.google.com/dns/docs/dnssec) and [Google Cloud DNS record types](https://docs.cloud.google.com/dns/docs/records-overview)
 - [DNSimple DNSSEC](https://support.dnsimple.com/articles/dnssec/) and [DNSimple TLSA records](https://support.dnsimple.com/articles/manage-tlsa-record/)
-- [DigitalOcean DNSSEC support status](https://docs.digitalocean.com/support/does-digitalocean-support-dnssec/)
 - [Namecheap custom-DNS DNSSEC](https://www.namecheap.com/support/knowledgebase/article.aspx/9722/2232/managing-dnssec-for-domains-pointed-to-custom-dns/) and [GoDaddy DNSSEC](https://www.godaddy.com/help/turn-dnssec-on-or-off-6420)
 - [BIND 9 DNSSEC key and signing policy](https://kb.isc.org/docs/dnssec-key-and-signing-policy)
 - [Microsoft DNSSEC zone signing](https://learn.microsoft.com/en-us/windows-server/networking/dns/sign-dnssec-zone), [Invoke-DnsServerZoneSign](https://learn.microsoft.com/en-us/powershell/module/dnsserver/invoke-dnsserverzonesign), and [Add-DnsServerResourceRecord TLSA parameters](https://learn.microsoft.com/en-us/powershell/module/dnsserver/add-dnsserverresourcerecord)

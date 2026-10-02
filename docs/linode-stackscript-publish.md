@@ -175,7 +175,7 @@ Only after the private revision installs the read-back GitHub asset and passes
 the deployment checks should a maintainer deliberately publish a replacement
 with `--public`. Linode treats public publication as irreversible. A
 replacement receives a new API-assigned ID; do not assume it will reuse the
-historical public ID.
+configured public ID.
 
 ### Cloud Manager form values
 
@@ -222,21 +222,3 @@ VITE_LINODE_STACKSCRIPT_ID=<replacement-stackscript-id> npm run build
 
 The user still deploys inside their own Linode account, and Linode bills them
 directly. The browser app must not ask for a Linode API token.
-
-## Historical v0.2.1 deployment and migration
-
-Preserve the existing public deployment as historical evidence:
-
-- Public StackScript ID `2158182` is `HNS DANE One-Name Server`.
-- Annotated tag `v0.2.1` resolves to commit
-  `f8ad194609708ba0fdec1f5884ad6871557cdec2` and tree
-  `c61e2cb21f275163d7f5ececf4010b50592684fa`.
-- Its tagged StackScript template used the legacy GitHub-generated tag archive
-  URL
-  `https://github.com/denuoweb/hns-dane-bootstrap-generator/archive/refs/tags/${APPLIANCE_VERSION}.tar.gz`.
-
-That historical generated source archive is not the canonical v0.2.2 appliance
-asset, and its unknown published StackScript checksum must not be inferred from
-a later download. Do not repoint or rewrite the already-public v0.2.1
-StackScript. Publish v0.2.2 as a replacement with a new ID, validate it, then
-move the app default in a later exact-source release.
