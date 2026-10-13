@@ -409,8 +409,12 @@ function App() {
   const urlPrefill = useMemo(() => readUrlPrefill(), []);
   const [language, setLanguage] = useState<LanguageCode>(() => {
     if (typeof window === 'undefined') return 'en';
-    const saved = window.localStorage.getItem('hns-dane-language');
-    return isLanguageCode(saved) ? saved : 'en';
+    try {
+      const saved = window.localStorage.getItem('hns-dane-language');
+      return isLanguageCode(saved) ? saved : 'en';
+    } catch {
+      return 'en';
+    }
   });
   const [domainType, setDomainType] = useState<DomainType>(urlPrefill.domainType);
   const [setupMode, setSetupMode] = useState<SetupMode>(urlPrefill.setupMode);
@@ -458,7 +462,11 @@ function App() {
   useEffect(() => {
     document.documentElement.lang = language;
     document.documentElement.dir = isRtlLanguage(language) ? 'rtl' : 'ltr';
-    window.localStorage.setItem('hns-dane-language', language);
+    try {
+      window.localStorage.setItem('hns-dane-language', language);
+    } catch {
+      // Keep the selected language for this session when storage is unavailable.
+    }
   }, [language]);
 
   useEffect(() => {
