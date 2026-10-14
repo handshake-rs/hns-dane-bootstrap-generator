@@ -77,7 +77,7 @@ _443._tcp.dane. 3600 IN TLSA 3 1 1 9B2C...A811
 
 ### HNS SYNTH nameserver mode
 
-Compact HNS referral to an authoritative nameserver IP. The website address and TLSA record still live on the authoritative DNS server:
+Compact HNS referral to an authoritative nameserver IP. The authoritative DNS server publishes the website address and TLSA record:
 
 ```zone
 # HNS wallet / name resource
@@ -100,7 +100,7 @@ _dns.ns1.dane. 3600 IN SVCB 1 ns1.dane. alpn=h2 dohpath=/dns-query{?dns}
 
 The nameserver serves RFC 8484 at `https://ns1.dane/dns-query`. Because the SVCB advertises HTTP/2 and omits the optional `port` parameter, RFC 9461 assigns DoH its default HTTPS port, TCP 443. The HTTPS certificate must be valid for the nameserver hostname.
 
-This is still delegated authoritative DNS. The HNS parent resource proves the `NS`, `GLUE4`/`GLUE6`, and `DS` delegation; the signed authoritative zone advertises the alternate transport. The client still validates the HNS/DNSSEC chain and enforces the website's TLSA/DANE policy locally. DoH is not a trusted replacement validator.
+This is delegated authoritative DNS. The HNS parent resource proves the `NS`, `GLUE4`/`GLUE6`, and `DS` delegation; the signed authoritative zone advertises the alternate transport. The client validates the HNS/DNSSEC chain and enforces the website's TLSA/DANE policy locally. DoH transports the answers; it does not validate them.
 
 An important bootstrap limit applies to the current browser: it normally queries `_dns.<NS> SVCB` through the authoritative server on port 53 and validates that answer through the delegated DNSSEC chain. Consequently, the signed SVCB record does not, by itself, recover a network where every authoritative port 53 query is intercepted. It becomes usable after direct authoritative DNS can retrieve it, or after another authenticated path such as the opted-in P2P requester or an explicitly configured recursive HNS DoH endpoint has retrieved and validated it.
 
@@ -191,7 +191,7 @@ For self-hosted examples, see the Debian/BIND and Windows Server DNS quick start
 
 ## Operational requirements
 
-This tool generates bootstrap records. A working delegated authoritative DNS and DANE deployment still depends on the operator running and validating the DNS service correctly.
+This tool generates bootstrap records. A delegated authoritative DNS and DANE deployment also requires the operator to run and validate the DNS service.
 
 ### Authoritative nameserver baseline
 
@@ -301,7 +301,7 @@ Only parent-side delegation material: nameserver, glue when needed, and DS. TLSA
 
 ### Is SYNTH a website IP shortcut?
 
-No. HNS `SYNTH4` and `SYNTH6` encode nameserver IPs for a synthetic `_..._synth.` nameserver. The authoritative DNS server still publishes website `A`/`AAAA`, `TLSA`, and signed DNSSEC records.
+No. HNS `SYNTH4` and `SYNTH6` encode nameserver IPs for a synthetic `_..._synth.` nameserver. The authoritative DNS server publishes website `A`/`AAAA`, `TLSA`, and signed DNSSEC records.
 
 ### When do I paste DNSKEY?
 
