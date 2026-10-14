@@ -25,7 +25,7 @@ publisher to change. Denuo Web LLC may continue to operate, publish, or sign
 artifacts from this repository, provided each release identifies its exact
 canonical `handshake-rs` source commit or tag.
 
-The app keeps the workflow simple:
+The app workflow:
 
 1. Enter domain, nameserver, server IP, and certificate/public key.
 2. Send generated records to the HNS wallet or ICANN registrar.
@@ -43,7 +43,7 @@ The app keeps the workflow simple:
 
 ## Linode/Akamai appliance path
 
-The repository includes a single-node appliance path for beginners who want a self-hosted authoritative DNSSEC + DANE server on a Linode they own:
+The repository includes a single-node appliance path for a self-hosted authoritative DNSSEC + DANE server on a Linode you control:
 
 - `stackscripts/linode/hns-dane-appliance-bootstrap.sh` is a thin, hash-verified StackScript bootstrapper.
 - `appliance/install.sh` is the real versioned installer.
@@ -54,7 +54,7 @@ The repository includes a single-node appliance path for beginners who want a se
 - private TLS/DNSSEC material and backups stay on the VPS, outside `/var/www`.
 - two-node reliable mode is documented as a future assisted flow and intentionally not claimed complete.
 
-Start with [Linode Beginner Deploy](docs/linode-beginner-deploy.md), [Publish The Linode StackScript](docs/linode-stackscript-publish.md), and [Appliance README](appliance/README.md). The appliance does not take payment, touch ICANN registrars, request wallet seeds, submit HNS transactions, or require Terraform/OpenTofu for the beginner path.
+Start with [Linode Single-Node Deployment](docs/linode-beginner-deploy.md), [Publish The Linode StackScript](docs/linode-stackscript-publish.md), and [Appliance README](appliance/README.md). The appliance does not take payment, touch ICANN registrars, request wallet seeds, submit HNS transactions, or require Terraform/OpenTofu for the single-node path.
 
 ## Supported modes
 

@@ -1,4 +1,4 @@
-# Linode Beginner Deploy
+# Linode Single-Node Deployment
 
 This path is for a user who wants Linode/Akamai to bill them directly and wants to paste the final HNS records into their own wallet.
 
@@ -42,7 +42,7 @@ DNSSEC private key supplied by user
 
 The VPS generates its own TLS and DNSSEC keys locally. The public dashboard shows only public DNS records and status.
 
-## Beginner mode
+## Single-node mode
 
 The v0.2.2 StackScript source always provisions `single-node`; it does not expose a
 deployment-mode field. The resulting appliance creates:
@@ -53,4 +53,4 @@ NS + GLUE4 + DS for the HNS wallet
 TLSA _443._tcp.<name>. from the local HTTPS key
 ```
 
-Terraform/OpenTofu and SYNTH records are not part of the beginner path.
+Terraform/OpenTofu and SYNTH records are not part of this deployment path.

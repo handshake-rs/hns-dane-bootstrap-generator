@@ -17,6 +17,6 @@ Implemented baseline:
 - basic sysctl network hardening
 - logrotate config for appliance logs
 
-The appliance does not change the SSH port, disable root login, or disable password login by default. Those changes can lock out beginners if they do not already have working SSH key access.
+The appliance does not change the SSH port, disable root login, or disable password login by default. Those changes can lock out operators who have not configured working SSH key access.
 
 The appliance does not install or expose a recursive resolver.

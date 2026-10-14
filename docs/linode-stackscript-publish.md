@@ -1,8 +1,8 @@
 # Publish The Linode StackScript
 
-The beginner UI becomes fully integrated only after a maintainer publishes a
-release-pinned StackScript to Linode and configures the app with its new ID.
-This is a maintainer release procedure, not something beginners should do.
+The Linode deployment flow becomes available in the app after a maintainer
+publishes a release-pinned StackScript and configures the app with its new ID.
+This procedure is for maintainers.
 
 ## v0.2.2 artifact contract
 

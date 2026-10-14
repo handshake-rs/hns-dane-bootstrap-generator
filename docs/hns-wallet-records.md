@@ -38,4 +38,4 @@ An HNS update replaces the complete resource. Old records that are not present i
 
 The appliance does not submit HNS transactions, sign wallet updates, custody funds, or request wallet seeds. The user copies the records and submits the update from their own wallet.
 
-SYNTH mode is intentionally outside the beginner path.
+SYNTH mode is outside the single-node appliance path.

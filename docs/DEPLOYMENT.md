@@ -50,7 +50,7 @@ For local appliance development, run:
 npm run test:appliance
 ```
 
-For a real VPS install, use Debian 13 and follow [Linode Beginner Deploy](linode-beginner-deploy.md).
+For a VPS install, use Debian 13 and follow [Linode Single-Node Deployment](linode-beginner-deploy.md).
 
 ## Static hosting
 

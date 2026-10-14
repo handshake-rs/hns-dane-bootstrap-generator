@@ -1,6 +1,6 @@
 # HNS DANE Appliance
 
-This directory contains the server-side appliance for a beginner HNS DANE deployment path.
+This directory contains the server-side appliance for a single-node HNS DANE deployment.
 
 The appliance turns one Debian 13 or Debian 12 Linode into:
 
@@ -19,7 +19,7 @@ The installer does not ask for wallet seeds, wallet private keys, Linode API tok
 
 Debian 13 is the primary Linode target. Debian 12 and Ubuntu 24.04 are accepted if the same packages and service names are available.
 
-Beginner mode is single-node:
+The supported deployment mode is single-node:
 
 ```bash
 sudo appliance/install.sh \
@@ -79,7 +79,7 @@ hns-dane show-config
 
 DNSSEC parent-facing rollover is frozen by default. TLS private-key rotation is also frozen by default. Both are deliberate: the HNS parent resource is manually updated by the user, so changing the DNSSEC key or HTTPS key without a staged update can break validation.
 
-Two-node reliable mode is documented as a design target in [Two-Node Reliable Mode](https://github.com/handshake-rs/hns-dane-bootstrap-generator/blob/v0.2.2/docs/two-node-mode.md). v0.2.2 fails clearly if `primary-node` or `secondary-node` is selected because redundancy is not complete yet.
+Two-node reliable mode is documented as a design target in [Two-Node Reliable Mode](https://github.com/handshake-rs/hns-dane-bootstrap-generator/blob/v0.2.2/docs/two-node-mode.md). The v0.2.2 installer rejects `primary-node` and `secondary-node` because redundancy is not implemented yet.
 
 ## Release artifact
 
